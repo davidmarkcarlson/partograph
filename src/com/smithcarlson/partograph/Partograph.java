@@ -122,7 +122,13 @@ public class Partograph {
 
       write(title, Orientation.LEFT_TO_RIGHT, HorizontalAlignment.CENTER, VerticalAlignment.BOTTOM,
           centerX, top - 0.5f, fontBold, titleFontSize, contentStream);
-      drawYAxes(contentStream);
+
+      labelLeftYAxis(contentStream);
+      drawLeftYAxis(contentStream);
+
+      labelRightAxis(contentStream);
+      drawRightYAxis(contentStream);
+
       drawXAxis(contentStream);
       contentStream.setStrokingColor(DYSTOCIA_LINE_COLOR);
       drawDystociaLine(contentStream);
@@ -166,8 +172,8 @@ public class Partograph {
     PointList points = createDystociaSequence();
     points.addPoint(points.getCurrentX(), points.getCurrentY() - 0.12f);
     for (int i = 1; i < points.size(); i++) {
-      drawLine(points.getXAt(i - 1), points.getYAt(i - 1), points.getXAt(i), points.getYAt(i),
-          2f, LinePattern.SOLID, DYSTOCIA_LINE_COLOR, LineCapStyle.PROJECTING_SQUARE, contentStream);
+      drawLine(points.getXAt(i - 1), points.getYAt(i - 1), points.getXAt(i), points.getYAt(i), 2f,
+          LinePattern.SOLID, DYSTOCIA_LINE_COLOR, LineCapStyle.PROJECTING_SQUARE, contentStream);
     }
 
     float box_x1 = points.getCurrentX() - 0.3f;
@@ -264,34 +270,64 @@ public class Partograph {
         4.0f, 6.0f, bodyFont, headingFontSize, contentStream);
   }
 
-  private void drawYAxes(PDPageContentStream contentStream) throws IOException {
-    // left Y axis
-    write("Cervical Dilation", Orientation.BOTTOM_TO_TOP, HorizontalAlignment.CENTER,
-        VerticalAlignment.BOTTOM, left - 1.0f, centerY, bodyFont, headingFontSize, contentStream);
+  private void drawRightYAxis(PDPageContentStream contentStream) throws IOException {
+    String[] rightYAxis = new String[] { "-3 or higher", "-2", "-1", "0", "+1", "+2", "+3 or lower" };
+    for (int i = 0; i < 7; i++) {
+      float y = 2.0f + (heightPerCM * i);
+      write(rightYAxis[i], Orientation.LEFT_TO_RIGHT, HorizontalAlignment.LEFT,
+          VerticalAlignment.CENTER, right + 0.2f, y, bodyFont, bodyFontSize, contentStream);
+      drawLine(left - 0.1f, y, right + 0.1f, y, 0.5f, LinePattern.SOLID, Color.BLACK,
+          LineCapStyle.ROUND, contentStream);
+    }
+  }
 
-    write("[Plot X]", Orientation.BOTTOM_TO_TOP, HorizontalAlignment.CENTER,
-        VerticalAlignment.BOTTOM, left - 0.8f, centerY, bodyFont, headingFontSize, contentStream);
+  private void drawLeftYAxis(PDPageContentStream contentStream) throws IOException {
+    String[] leftYAxis = new String[] { "10", "9", "8", "7", "6", "Direct Start 5",
+        "Earlier Start 4" };
+    for (int i = 0; i < 7; i++) {
+      float y = 2.0f + (heightPerCM * i);
+      write(leftYAxis[i], Orientation.LEFT_TO_RIGHT, HorizontalAlignment.RIGHT,
+          VerticalAlignment.CENTER, left - 0.2f, y, bodyFont, bodyFontSize, contentStream);
+      drawLine(left - 0.1f, y, right + 0.1f, y, 0.5f, LinePattern.SOLID, Color.BLACK,
+          LineCapStyle.ROUND, contentStream);
+    }
+  }
 
+  private void labelRightAxis(PDPageContentStream contentStream) throws IOException {
     // right Y axis
     write("Fetal Station", Orientation.TOP_TO_BOTTOM, HorizontalAlignment.CENTER,
         VerticalAlignment.BOTTOM, right + 1.0f, centerY, bodyFont, headingFontSize, contentStream);
 
     write("[Plot O]", Orientation.TOP_TO_BOTTOM, HorizontalAlignment.CENTER,
         VerticalAlignment.BOTTOM, right + 0.8f, centerY, bodyFont, headingFontSize, contentStream);
+  }
 
-    String[] leftYAxis = new String[] { "10", "9", "8", "7", "6", "Direct Start 5",
-        "Earlier Start 4" };
-    String[] rightYAxis = new String[] { "-3 or higher", "-2", "-1", "0", "+1", "+2", "+3 or lower" };
+  private void labelLeftYAxis(PDPageContentStream contentStream) throws IOException {
+    // left Y axis
+    float line1XPos = left - 1.0f;
+    String line1Text = "Cervical Dilationy";
+    write(line1Text, Orientation.BOTTOM_TO_TOP, HorizontalAlignment.CENTER,
+        VerticalAlignment.BOTTOM, line1XPos, centerY, bodyFont, headingFontSize, contentStream);
+    float bufferAroundText = 0.15f;
+    float line1Width = bodyFontSize * bodyFont.getStringWidth(line1Text) / 72000f;
 
-    for (int i = 0; i < 7; i++) {
-      float y = 2.0f + (heightPerCM * i);
-      write(leftYAxis[i], Orientation.LEFT_TO_RIGHT, HorizontalAlignment.RIGHT,
-          VerticalAlignment.CENTER, left - 0.2f, y, bodyFont, bodyFontSize, contentStream);
-      write(rightYAxis[i], Orientation.LEFT_TO_RIGHT, HorizontalAlignment.LEFT,
-          VerticalAlignment.CENTER, right + 0.2f, y, bodyFont, bodyFontSize, contentStream);
-      drawLine(left - 0.1f, y, right + 0.1f, y, 0.5f, LinePattern.SOLID, Color.BLACK,
-          LineCapStyle.ROUND, contentStream);
-    }
+    write("[Plot X]", Orientation.BOTTOM_TO_TOP, HorizontalAlignment.CENTER,
+        VerticalAlignment.BOTTOM, left - 0.8f, centerY, bodyFont, headingFontSize, contentStream);
+
+    float fontHeight = headingFontSize / (72f);
+    float leftmost = line1XPos - (1.2f * fontHeight);
+    float rightmost = line1XPos + (1.5f * fontHeight / 3f);
+    float rangeCenter = (leftmost + rightmost) / 2f;
+
+    drawLine(leftmost, top, rightmost, top, 0.5f, LinePattern.SOLID, Color.BLACK,
+        LineCapStyle.BUTT, contentStream);
+    drawLine(rangeCenter, top, rangeCenter, centerY - ((line1Width / 2) + bufferAroundText), 0.5f,
+        LinePattern.SOLID, Color.BLACK, LineCapStyle.BUTT, contentStream);
+
+    drawLine(leftmost, bottom, rightmost, bottom, 0.5f, LinePattern.SOLID, Color.BLACK,
+        LineCapStyle.BUTT, contentStream);
+    drawLine(rangeCenter, centerY + ((line1Width / 2) + bufferAroundText), rangeCenter, bottom,
+        0.5f, LinePattern.SOLID, Color.BLACK, LineCapStyle.BUTT, contentStream);
   }
 
   private void write(String string, Orientation orientation, HorizontalAlignment halign,
@@ -301,7 +337,10 @@ public class Partograph {
     float posx = toPoints(x);
     float posy = toPoints(11 - y);
 
+    byte[] referenceChars = new byte[] { 'l', 'x', 'y' };
     float shiftx = 0f, shifty = 0f;
+    float ascent = fontSize * font.getFontHeight(referenceChars, 0, 1) / 1000f;
+
     switch (halign) {
     case CENTER:
       shiftx -= fontSize * (font.getStringWidth(string) / 2000f);
@@ -315,10 +354,10 @@ public class Partograph {
 
     switch (valign) {
     case CENTER:
-      shifty -= fontSize * (font.getFontHeight(new byte[] { 'X' }, 0, 1) / 2000f);
+      shifty -= ascent / 2f;
       break;
     case TOP:
-      shifty -= fontSize * (font.getFontHeight(new byte[] { 'X' }, 0, 1) / 1000f);
+      shifty -= ascent;
       break;
     case BOTTOM:
       break;
