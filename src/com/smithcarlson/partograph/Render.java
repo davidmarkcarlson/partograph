@@ -11,7 +11,9 @@ public class Render {
     PDDocument document = new PDDocument();
     PDPage page = new PDPage(PDPage.PAGE_SIZE_LETTER);
     document.addPage(page);
-    addPartograph(document, page, "Nulliparous, BMI <25", new float[] { 5f, 3f, 2f, 2f, 1.5f, 1.5f });
+    PDCanvas canvas = new PDCanvas(document, page);
+    addPartograph(canvas, "Nulliparous, BMI <25",
+        new float[] { 5f, 3f, 2f, 2f, 1.5f, 1.5f });
     // addPartograph(document, "Nulliparous, BMI 25-30", new float[] { 5f, 3f,
     // 2f, 1.5f, 1.5f, 1.75f });
     // addPartograph(document, "Nulliparous, BMI 30-40", new float[] { 5.5f,
@@ -22,11 +24,12 @@ public class Render {
     document.close();
   }
 
-  private static void addPartograph(PDDocument document, PDPage page, String title,
-      float[] durations) throws IOException {
+  private static void addPartograph(PDCanvas canvas, String title, float[] durations)
+      throws IOException {
     Partograph partograph = new Partograph();
     partograph.setTitle(title);
     partograph.setDurations(durations);
-    partograph.render(document, page);
+    partograph.render(canvas);
+    canvas.close();
   }
 }
