@@ -26,7 +26,7 @@ public class Render {
 
   private static void addPartograph(PDCanvas canvas, String title, float[] durations)
       throws IOException {
-    Partograph partograph = new Partograph();
+    SpecializedPartograph partograph = new SpecializedPartograph();
     partograph.setTitle(title);
     partograph.setDurations(durations);
     partograph.render(canvas);
