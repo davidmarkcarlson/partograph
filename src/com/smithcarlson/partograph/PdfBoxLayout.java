@@ -33,6 +33,12 @@ public class PdfBoxLayout extends BaseLayout implements Layout<PdfBox> {
     partographWidth = partographRight - partographLeft;
     widthPerHour = partographWidth / hours;
 
+    xAxisOverhang = 0.1f;
+  }
+
+  @Override
+  public int getCmCount() {
+    return cmCount;
   }
 
   @Override
@@ -106,26 +112,6 @@ public class PdfBoxLayout extends BaseLayout implements Layout<PdfBox> {
   }
 
   @Override
-  public float getXAxisOverhang() {
-    return xAxisOverhang;
-  }
-
-  @Override
-  public float getXAxisMargin() {
-    return xAxisMargin;
-  }
-
-  @Override
-  public float getYAxisOverhang() {
-    return xAxisOverhang;
-  }
-
-  @Override
-  public float getYAxisMargin() {
-    return yAxisMargin;
-  }
-
-  @Override
   public float getSpaceToHourBoxes() {
     return spaceToHourBoxes;
   }
@@ -138,5 +124,20 @@ public class PdfBoxLayout extends BaseLayout implements Layout<PdfBox> {
   @Override
   public float getTimeSpacing() {
     return timeSpacing;
+  }
+
+  @Override
+  public float getHLineLeft() {
+    return partographLeft - xAxisOverhang;
+  }
+
+  @Override
+  public float getHLineRight() {
+    return partographRight + xAxisOverhang;
+  }
+
+  @Override
+  public float getHLineY(int i) {
+    return partographTop + (getHeightPerCm() * i);
   }
 }

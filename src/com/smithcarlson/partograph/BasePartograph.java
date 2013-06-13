@@ -18,14 +18,16 @@ public class BasePartograph<T> {
   Layout<T> layout;
 
   void drawHorizGridLines(Canvas<T> canvas) throws IOException {
-    for (int i = 0; i < 7; i++) {
-      float y = layout.getPartographTop() + (layout.getHeightPerCm() * i);
-      canvas.drawLine(layout.getPartographLeft() - 0.1f, y, layout.getPartographRight() + 0.1f, y,
-          0.5f, LinePattern.SOLID, Color.BLACK, LineCapStyle.PROJECTING_SQUARE);
+    float left = layout.getHLineLeft();
+    float right = layout.getHLineRight();
+    for (int i = 0; i < layout.getCmCount(); i++) {
+      float y = layout.getHLineY(i);
+      canvas.drawLine(left, y, right, y, 0.5f, LinePattern.SOLID, Color.BLACK,
+          LineCapStyle.PROJECTING_SQUARE);
     }
-    canvas.drawLine(layout.getPartographLeft() - 0.1f, layout.getPartographBottom() + 0.75f,
-        layout.getPartographRight(), layout.getPartographBottom() + 0.75f, 1f, LinePattern.SOLID,
-        Color.BLACK, LineCapStyle.PROJECTING_SQUARE);
+    canvas.drawLine(left, layout.getPartographBottom() + 0.75f, layout.getPartographRight(),
+        layout.getPartographBottom() + 0.75f, 1f, LinePattern.SOLID, Color.BLACK,
+        LineCapStyle.PROJECTING_SQUARE);
   }
 
   void drawVertGridLines(Canvas<T> canvas) throws IOException {
