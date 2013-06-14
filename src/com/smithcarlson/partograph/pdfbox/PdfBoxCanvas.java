@@ -19,6 +19,7 @@ import com.smithcarlson.partograph.general.PointList;
  *
  * @author dcarlson
  *
+ * TODO improve vertical centering
  */
 public class PdfBoxCanvas implements Canvas<PdfBox> {
 
@@ -167,5 +168,12 @@ public class PdfBoxCanvas implements Canvas<PdfBox> {
     drawLine(box_x1, box_y1, box_x1, box_y2, lineWidth, linePattern, color, capStyle);
     drawLine(box_x1, box_y2, box_x2, box_y2, lineWidth, linePattern, color, capStyle);
     drawLine(box_x2, box_y1, box_x2, box_y2, lineWidth, linePattern, color, capStyle);
+  }
+
+  @Override
+  public void drawBoxAround(float x, float y, float width, float height, float thickness,
+      Canvas.LinePattern pattern, Color color, Canvas.LineCapStyle capStyle) throws IOException {
+    drawBox(x - (width / 2f), x + (width / 2f), y - (height / 2f), y + (height / 2f), thickness,
+        pattern, color, capStyle);
   }
 }

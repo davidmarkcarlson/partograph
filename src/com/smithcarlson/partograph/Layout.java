@@ -4,11 +4,16 @@ import com.smithcarlson.partograph.general.Font;
 
 public interface Layout<T> {
 
-  Font<T> getBodyFont();
-  float getBoxSide();
-  int getCmCount();
-
+  Font<T> getTitleFont();
   Font<T> getHeadingFont();
+  Font<T> getBodyFont();
+
+  float getLightLineWeight();
+  float getHeavyLineWeight();
+
+  int getCmCount();
+  int getLinesPerHour();
+
 
   float getHeightPerCm();
   float getHLineLeft();
@@ -16,19 +21,29 @@ public interface Layout<T> {
   float getHLineY(int i);
   int getHours();
 
+  float getPartographTop();
   float getPartographBottom();
-  float getPartographCenterX();
   float getPartographCenterY();
   float getPartographHeight();
+
   float getPartographLeft();
   float getPartographRight();
-
-  float getPartographTop();
+  float getPartographCenterX();
   float getPartographWidth();
-  float getSpaceToHourBoxes();
 
-  float getTimeSpacing();
-  Font<T> getTitleFont();
+  float getVerticalLineXFor(int i);
+
+  float getHourGridLineBottom();
+  float getHalfHourGridLineBottom();
+  float getQuarterHourGridLineBottom();
+
+  float getTimeWriteInTop();
+  float getTimeWriteInBottom();
+
+  @Deprecated
   float getWidthPerHour();
-
+  float getHourBoxCenterY();
+  float getHourBoxSize();
+  float getLeftYAxisHashLabelX();
+  float getRightYAxisHashLabelX();
 }

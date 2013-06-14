@@ -45,6 +45,8 @@ public class SpecializedPartograph<T> {
       base.drawVertGridLines(canvas);
       base.drawHorizGridLines(canvas);
 
+      base.drawTimelineWorkspace(canvas);
+
       drawDystociaLine(canvas);
 
     } catch (IOException e) {

@@ -15,11 +15,15 @@ public class PdfBoxLayout extends BaseLayout implements Layout<PdfBox> {
 
   public PdfBoxLayout() throws IOException {
     hours = 20;
+    linesPerHour = 4;
     cmCount = 7;
 
     titleFont = new PdfBoxFont(PDType1Font.HELVETICA_BOLD, 10f);
     headingFont = new PdfBoxFont(PDType1Font.HELVETICA, 8f);
     bodyFont = new PdfBoxFont(PDType1Font.HELVETICA, 7f);
+
+    lightLineWeight = 0.5f;
+    heavyLineWeight = 1.0f;
 
     partographTop = 2.0f;
     heightPerCm = 0.3f;
@@ -34,6 +38,13 @@ public class PdfBoxLayout extends BaseLayout implements Layout<PdfBox> {
     widthPerHour = partographWidth / hours;
 
     xAxisOverhang = 0.1f;
+    spaceToHourBoxes = 0.25f;
+    hourBoxSize = 0.15f;
+    timeSpace = 0.4f;
+    halfHourOverhang = 0.1f;
+
+    yAxisOverhang = 0.1f;
+    yAxisMargin = 0.05f;
   }
 
   @Override
@@ -107,26 +118,6 @@ public class PdfBoxLayout extends BaseLayout implements Layout<PdfBox> {
   }
 
   @Override
-  public float getWidthPerHour() {
-    return widthPerHour;
-  }
-
-  @Override
-  public float getSpaceToHourBoxes() {
-    return spaceToHourBoxes;
-  }
-
-  @Override
-  public float getBoxSide() {
-    return boxSide;
-  }
-
-  @Override
-  public float getTimeSpacing() {
-    return timeSpacing;
-  }
-
-  @Override
   public float getHLineLeft() {
     return partographLeft - xAxisOverhang;
   }
@@ -139,5 +130,76 @@ public class PdfBoxLayout extends BaseLayout implements Layout<PdfBox> {
   @Override
   public float getHLineY(int i) {
     return partographTop + (getHeightPerCm() * i);
+  }
+
+  @Override
+  public int getLinesPerHour() {
+    return linesPerHour;
+  }
+
+  @Override
+  public float getVerticalLineXFor(int position) {
+    return getPartographLeft() + ((position * widthPerHour) / linesPerHour);
+  }
+
+  @Override
+  public float getHourGridLineBottom() {
+    return partographBottom + spaceToHourBoxes;
+  }
+
+  @Override
+  public float getHalfHourGridLineBottom() {
+    return partographBottom + halfHourOverhang;
+  }
+
+  @Override
+  public float getQuarterHourGridLineBottom() {
+    return partographBottom;
+  }
+
+  @Override
+  public float getLightLineWeight() {
+    return lightLineWeight;
+  }
+
+  @Override
+  public float getHeavyLineWeight() {
+    return heavyLineWeight;
+  }
+
+  @Override
+  public float getTimeWriteInTop() {
+    return partographBottom + spaceToHourBoxes + hourBoxSize;
+  }
+
+  @Override
+  public float getTimeWriteInBottom() {
+    return partographBottom + spaceToHourBoxes + hourBoxSize + timeSpace;
+  }
+
+  @Override
+  @Deprecated
+  public float getWidthPerHour() {
+    return widthPerHour;
+  }
+
+  @Override
+  public float getHourBoxCenterY() {
+    return partographBottom + spaceToHourBoxes + (hourBoxSize/2f);
+  }
+
+  @Override
+  public float getHourBoxSize() {
+    return hourBoxSize;
+  }
+
+  @Override
+  public float getLeftYAxisHashLabelX() {
+    return partographLeft - (yAxisOverhang + yAxisMargin);
+  }
+
+  @Override
+  public float getRightYAxisHashLabelX() {
+    return partographRight + (yAxisOverhang + yAxisMargin);
   }
 }

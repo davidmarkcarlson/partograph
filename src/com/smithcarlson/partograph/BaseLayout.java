@@ -3,6 +3,10 @@ package com.smithcarlson.partograph;
 public class BaseLayout {
   int cmCount;
   int hours;
+  int linesPerHour;
+
+  float lightLineWeight;
+  float heavyLineWeight;
 
   float partographTop;
   float partographBottom;
@@ -23,6 +27,8 @@ public class BaseLayout {
   float yAxisMargin;
 
   float spaceToHourBoxes;
-  float boxSide;
-  float timeSpacing;
+  float halfHourOverhang;
+  float hourBoxSize;
+  float timeSpace;
+
 }

@@ -39,6 +39,9 @@ public interface Canvas<T> {
   void drawBox(float x1, float x2, float y1, float y2, float lineWidth, LinePattern linePattern,
       Color color, LineCapStyle capStyle) throws IOException;
 
+  void drawBoxAround(float x, float y, float width, float height, float heavyLineWeight,
+      LinePattern solid, Color black, LineCapStyle projectingSquare) throws IOException;
+
   void fillPolygon(PointList points, Color fillColor) throws IOException;
 
   void write(String string, Orientation orientation, HorizontalAlignment halign,
