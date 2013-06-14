@@ -24,6 +24,7 @@ public class PdfBoxLayout extends BaseLayout implements Layout<PdfBox> {
 
     lightLineWeight = 0.5f;
     heavyLineWeight = 1.0f;
+    wideLineWeight = 2.0f;
 
     partographTop = 2.0f;
     heightPerCm = 0.3f;
@@ -40,11 +41,11 @@ public class PdfBoxLayout extends BaseLayout implements Layout<PdfBox> {
     xAxisOverhang = 0.1f;
     spaceToHourBoxes = 0.25f;
     hourBoxSize = 0.15f;
-    timeSpace = 0.4f;
+    timeSpace = 0.35f;
     halfHourOverhang = 0.1f;
 
     yAxisOverhang = 0.1f;
-    yAxisMargin = 0.05f;
+    yAxisMargin = 0.1f;
   }
 
   @Override
@@ -129,7 +130,7 @@ public class PdfBoxLayout extends BaseLayout implements Layout<PdfBox> {
 
   @Override
   public float getHLineY(int i) {
-    return partographTop + (getHeightPerCm() * i);
+    return partographTop + (getHeightPerCm() * (cmCount - (i + 1)));
   }
 
   @Override
@@ -138,8 +139,13 @@ public class PdfBoxLayout extends BaseLayout implements Layout<PdfBox> {
   }
 
   @Override
-  public float getVerticalLineXFor(int position) {
+  public float getVerticalLineXForLine(int position) {
     return getPartographLeft() + ((position * widthPerHour) / linesPerHour);
+  }
+
+  @Override
+  public float getPartographXForHour(float hour) {
+    return getPartographLeft() + (hour * widthPerHour);
   }
 
   @Override
@@ -185,7 +191,7 @@ public class PdfBoxLayout extends BaseLayout implements Layout<PdfBox> {
 
   @Override
   public float getHourBoxCenterY() {
-    return partographBottom + spaceToHourBoxes + (hourBoxSize/2f);
+    return partographBottom + spaceToHourBoxes + (hourBoxSize / 2f);
   }
 
   @Override
@@ -201,5 +207,15 @@ public class PdfBoxLayout extends BaseLayout implements Layout<PdfBox> {
   @Override
   public float getRightYAxisHashLabelX() {
     return partographRight + (yAxisOverhang + yAxisMargin);
+  }
+
+  @Override
+  public float getPartographYForPosition(float position) {
+    return partographBottom - (position * heightPerCm);
+  }
+
+  @Override
+  public float getWideLineWeight() {
+    return wideLineWeight;
   }
 }

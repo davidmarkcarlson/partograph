@@ -19,7 +19,7 @@ import com.smithcarlson.partograph.general.PointList;
  *
  * @author dcarlson
  *
- * TODO improve vertical centering
+ *         TODO improve vertical centering
  */
 public class PdfBoxCanvas implements Canvas<PdfBox> {
 
@@ -53,15 +53,6 @@ public class PdfBoxCanvas implements Canvas<PdfBox> {
     map.put(HorizontalAlignment.CENTER, 0.5f);
     map.put(HorizontalAlignment.RIGHT, 1f);
     HORIZ_SHIFT_MULT = map;
-  }
-
-  private static final Map<VerticalAlignment, Float> VERT_SHIFT_MULT;
-  static {
-    Map<VerticalAlignment, Float> map = new HashMap<VerticalAlignment, Float>();
-    map.put(VerticalAlignment.BOTTOM, 0f);
-    map.put(VerticalAlignment.CENTER, 0.5f);
-    map.put(VerticalAlignment.TOP, 1f);
-    VERT_SHIFT_MULT = map;
   }
 
   public PdfBoxCanvas(PDPage page, PDPageContentStream contentStream, float atX, float atY)
@@ -129,7 +120,21 @@ public class PdfBoxCanvas implements Canvas<PdfBox> {
     float posy = mediaBox.getHeight() - PdfBox.toPoints(y + offsetY);
 
     float shiftx = -HORIZ_SHIFT_MULT.get(halign) * _font.getStringWidthRaw(string);
-    float shifty = -VERT_SHIFT_MULT.get(valign) * font.getAscenderHeight();
+    float shifty = 0f;
+    switch (valign) {
+    case TOP:
+      shifty = -font.getAscenderHeight();
+      break;
+    case CENTER:
+      shifty = font.getAscenderHeight() / -2f;
+      break;
+    case BASELINE:
+      shifty = 0;
+      break;
+    case BOTTOM:
+      shifty = font.getDescenderHeight();
+      break;
+    }
 
     Matrix shift = Matrix.getTranslatingInstance(shiftx, shifty);
 
@@ -175,5 +180,43 @@ public class PdfBoxCanvas implements Canvas<PdfBox> {
       Canvas.LinePattern pattern, Color color, Canvas.LineCapStyle capStyle) throws IOException {
     drawBox(x - (width / 2f), x + (width / 2f), y - (height / 2f), y + (height / 2f), thickness,
         pattern, color, capStyle);
+  }
+
+  @Override
+  public void writeWithin(String string, float x1, float x2, float y1, float y2,
+      Canvas.Orientation orientation, Canvas.HorizontalAlignment halign,
+      Canvas.VerticalAlignment valign, Font<PdfBox> font, Canvas.Border[] borders,
+      float borderThickness, Canvas.LinePattern borderPattern, Color color) throws IOException {
+    float centerX = (x1 + x2) / 2f;
+    float centerY = (y1 + y2) / 2f;
+    for (Canvas.Border border : borders) {
+      switch (border) {
+      case TOP:
+        drawLine(x1, y1, x2, y1, borderThickness, borderPattern, color,
+            LineCapStyle.PROJECTING_SQUARE);
+        break;
+      case HORIZ_CENTER:
+        drawLine(x1, centerY, x2, centerY, borderThickness, borderPattern, color,
+            LineCapStyle.PROJECTING_SQUARE);
+        break;
+      case BOTTOM:
+        drawLine(x1, y2, x2, y2, borderThickness, borderPattern, color,
+            LineCapStyle.PROJECTING_SQUARE);
+        break;
+      case LEFT:
+        drawLine(x1, y1, x1, y2, borderThickness, borderPattern, color,
+            LineCapStyle.PROJECTING_SQUARE);
+        break;
+      case VERT_CENTER:
+        drawLine(centerX, y1, centerX, y2, borderThickness, borderPattern, color,
+            LineCapStyle.PROJECTING_SQUARE);
+        break;
+      case RIGHT:
+        drawLine(x2, y1, x2, y2, borderThickness, borderPattern, color,
+            LineCapStyle.PROJECTING_SQUARE);
+        break;
+      }
+      write(string, orientation, halign, valign, centerX, centerY, font, color);
+    }
   }
 }

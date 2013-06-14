@@ -12,4 +12,6 @@ public interface Font<T> {
 
   float getSizePts();
 
+  float getDescenderHeight();
+
 }

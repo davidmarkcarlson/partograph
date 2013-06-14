@@ -30,7 +30,11 @@ public interface Canvas<T> {
   }
 
   enum VerticalAlignment {
-    BOTTOM, CENTER, TOP
+    BOTTOM, BASELINE, CENTER, TOP
+  }
+
+  enum Border {
+    TOP, HORIZ_CENTER, BOTTOM, LEFT, VERT_CENTER, RIGHT
   }
 
   void drawLine(float x1, float y1, float x2, float y2, float lineWidth, LinePattern linePattern,
@@ -46,4 +50,8 @@ public interface Canvas<T> {
 
   void write(String string, Orientation orientation, HorizontalAlignment halign,
       VerticalAlignment valign, float x, float y, Font<T> font, Color color) throws IOException;
+
+  void writeWithin(String string, float x1, float x2, float y1, float y2, Orientation orientation,
+      HorizontalAlignment halign, VerticalAlignment valign, Font<T> font, Border[] borders,
+      float borderThickness, LinePattern borderPattern, Color color) throws IOException;
 }

@@ -32,7 +32,7 @@ public class BasePartograph<T> {
     int vertLines = (layout.getHours() * layout.getLinesPerHour()) + 1;
     for (int i = 0; i < vertLines; i++) {
       int mod = i % layout.getLinesPerHour();
-      float x = layout.getVerticalLineXFor(i);
+      float x = layout.getVerticalLineXForLine(i);
       switch (mod) {
       case 0:
         canvas.drawLine(x, layout.getPartographTop(), x, layout.getPartographBottom(),
@@ -56,7 +56,7 @@ public class BasePartograph<T> {
     int vertLines = (layout.getHours() * layout.getLinesPerHour()) + 1;
     for (int i = 0; i < vertLines; i++) {
       int mod = i % layout.getLinesPerHour();
-      float x = layout.getVerticalLineXFor(i);
+      float x = layout.getVerticalLineXForLine(i);
       switch (mod) {
       case 0:
         canvas.drawLine(x, layout.getPartographBottom(), x, layout.getHourGridLineBottom(),
@@ -81,8 +81,8 @@ public class BasePartograph<T> {
       }
     }
     canvas.write("Hour", Orientation.LEFT_TO_RIGHT, HorizontalAlignment.RIGHT,
-        VerticalAlignment.BOTTOM, layout.getPartographLeft() - 0.2f,
-        layout.getPartographBottom() + 0.35f, layout.getBodyFont(), Color.BLACK);
+        VerticalAlignment.CENTER, layout.getLeftYAxisHashLabelX(), layout.getHourBoxCenterY(),
+        layout.getBodyFont(), Color.BLACK);
     canvas.write("Time", Orientation.BOTTOM_TO_TOP, HorizontalAlignment.CENTER,
         VerticalAlignment.BOTTOM, layout.getPartographLeft() - 0.2f,
         layout.getPartographBottom() + 0.575f, layout.getBodyFont(), Color.BLACK);
@@ -98,18 +98,18 @@ public class BasePartograph<T> {
   void drawLeftYAxis(Canvas<T> canvas) throws IOException {
     for (int i = 0; i < layout.getCmCount(); i++) {
       float y = layout.getHLineY(i);
-      canvas.write(Fields.LEFT_Y_AXIS_LABELS[i], Orientation.LEFT_TO_RIGHT, HorizontalAlignment.RIGHT,
-          VerticalAlignment.CENTER, layout.getLeftYAxisHashLabelX(), y, layout.getBodyFont(),
-          Color.BLACK);
+      canvas.write(Fields.LEFT_Y_AXIS_LABELS[i], Orientation.LEFT_TO_RIGHT,
+          HorizontalAlignment.RIGHT, VerticalAlignment.CENTER, layout.getLeftYAxisHashLabelX(), y,
+          layout.getBodyFont(), Color.BLACK);
     }
   }
 
   void drawRightYAxis(Canvas<T> canvas) throws IOException {
     for (int i = 0; i < layout.getCmCount(); i++) {
       float y = layout.getHLineY(i);
-      canvas.write(Fields.RIGHT_Y_AXIS_LABELS[i], Orientation.LEFT_TO_RIGHT, HorizontalAlignment.LEFT,
-          VerticalAlignment.CENTER, layout.getRightYAxisHashLabelX(), y, layout.getBodyFont(),
-          Color.BLACK);
+      canvas.write(Fields.RIGHT_Y_AXIS_LABELS[i], Orientation.LEFT_TO_RIGHT,
+          HorizontalAlignment.LEFT, VerticalAlignment.CENTER, layout.getRightYAxisHashLabelX(), y,
+          layout.getBodyFont(), Color.BLACK);
     }
   }
 

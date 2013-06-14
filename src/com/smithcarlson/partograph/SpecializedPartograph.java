@@ -30,8 +30,8 @@ public class SpecializedPartograph<T> {
   public void render(Canvas<T> canvas) throws IOException {
     try {
       canvas.write(title, Orientation.LEFT_TO_RIGHT, HorizontalAlignment.CENTER,
-          VerticalAlignment.BOTTOM, base.layout.getPartographCenterX(), base.layout.getPartographTop() - 0.5f, base.layout.getTitleFont(),
-          Color.BLACK);
+          VerticalAlignment.BOTTOM, base.layout.getPartographCenterX(),
+          base.layout.getPartographTop() - 0.5f, base.layout.getTitleFont(), Color.BLACK);
 
       drawDystociaAlertPolygon(canvas);
       drawDystociaActionPolygon(canvas);
@@ -64,18 +64,24 @@ public class SpecializedPartograph<T> {
 
   private PointList createDystociaSequence() {
     PointList points = new PointList();
-    float x = base.layout.getPartographLeft(), y = base.layout.getPartographBottom();
+    float x = base.layout.getPartographLeft();
+    float y = base.layout.getPartographBottom();
 
-    for (int i = 0; i < 6; i++) {
-      // h line
-      points.addPoint(x, y);
-      x = x + (base.layout.getWidthPerHour() * durations[i]);
-      points.addPoint(x, y);
-
-      // v offset
-      y -= base.layout.getHeightPerCm();
-    }
+    int increments = base.layout.getCmCount() - 1;
+    float cumulativeTime = 0f;
     points.addPoint(x, y);
+    int i = 1;
+    while (i < increments) {
+      // h line
+      cumulativeTime += durations[i];
+      x = base.layout.getPartographXForHour(cumulativeTime);
+      points.addPoint(x, y);
+
+      i++;
+      // v offset
+      y = base.layout.getPartographYForPosition(i);
+      points.addPoint(x, y);
+    }
     return points;
   }
 
@@ -84,8 +90,8 @@ public class SpecializedPartograph<T> {
     points.addPoint(points.getCurrentX(), points.getCurrentY() - 0.12f);
     for (int i = 1; i < points.size(); i++) {
       canvas.drawLine(points.getXAt(i - 1), points.getYAt(i - 1), points.getXAt(i),
-          points.getYAt(i), 2f, LinePattern.SOLID, DYSTOCIA_LINE_COLOR,
-          LineCapStyle.PROJECTING_SQUARE);
+          points.getYAt(i), base.layout.getWideLineWeight(), LinePattern.SOLID,
+          DYSTOCIA_LINE_COLOR, LineCapStyle.PROJECTING_SQUARE);
     }
 
     float box_x1 = points.getCurrentX() - 0.3f;

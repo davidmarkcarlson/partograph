@@ -7,6 +7,7 @@ public class BaseLayout {
 
   float lightLineWeight;
   float heavyLineWeight;
+  float wideLineWeight;
 
   float partographTop;
   float partographBottom;

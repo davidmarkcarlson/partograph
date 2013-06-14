@@ -10,11 +10,13 @@ public interface Layout<T> {
 
   float getLightLineWeight();
   float getHeavyLineWeight();
+  float getWideLineWeight();
 
   int getCmCount();
   int getLinesPerHour();
 
 
+  @Deprecated
   float getHeightPerCm();
   float getHLineLeft();
   float getHLineRight();
@@ -31,7 +33,9 @@ public interface Layout<T> {
   float getPartographCenterX();
   float getPartographWidth();
 
-  float getVerticalLineXFor(int i);
+  float getVerticalLineXForLine(int line);
+  float getPartographXForHour(float hour);
+  float getPartographYForPosition(float position);
 
   float getHourGridLineBottom();
   float getHalfHourGridLineBottom();

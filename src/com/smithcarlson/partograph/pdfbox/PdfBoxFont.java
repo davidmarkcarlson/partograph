@@ -69,6 +69,7 @@ public class PdfBoxFont implements Font<PdfBox> {
     return descender;
   }
 
+  @Override
   public float getDescenderHeight() {
     return descenderHeight;
   }
