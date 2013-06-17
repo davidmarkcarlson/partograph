@@ -47,14 +47,12 @@ public class TypeSetter<T> {
     this.color = color;
   }
 
-  public void write(String text, float x, float y, Canvas<T> canvas) throws IOException {
-    write(text, x, y, 0f, canvas);
+  public Color getColor() {
+    return color;
   }
 
-  public void write(String text, float x, float y, float rotation, Canvas<T> canvas)
-      throws IOException {
-    canvas.write(text, x, y, canvas.xShift(halign, text, font), canvas.yShift(valign, font),
-        rotation, font, color);
+  public Font<T> getFont() {
+    return font;
   }
 
   public HorizontalAlignment getHalign() {
@@ -63,14 +61,6 @@ public class TypeSetter<T> {
 
   public VerticalAlignment getValign() {
     return valign;
-  }
-
-  public Font<T> getFont() {
-    return font;
-  }
-
-  public Color getColor() {
-    return color;
   }
 
   public TypeSetter<T> with(Font<T> newFont) {
@@ -83,6 +73,16 @@ public class TypeSetter<T> {
 
   public TypeSetter<T> with(VerticalAlignment newVAlign) {
     return new TypeSetter<T>(halign, newVAlign, font, color);
+  }
+
+  public void write(String text, float x, float y, Canvas<T> canvas) throws IOException {
+    write(text, x, y, 0f, canvas);
+  }
+
+  public void write(String text, float x, float y, float rotation, Canvas<T> canvas)
+      throws IOException {
+    canvas.write(text, x, y, canvas.xShift(halign, text, font), canvas.yShift(valign, font),
+        rotation, font, color);
   }
 
 }

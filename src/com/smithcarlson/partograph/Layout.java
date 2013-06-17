@@ -6,59 +6,57 @@ import com.smithcarlson.partograph.general.TypeSetter;
 
 public interface Layout<T> {
 
-  Font<T> getTitleFont();
-  Font<T> getHeadingFont();
-  Font<T> getBodyFont();
-
-  Pen lightLineFS();
-  Pen lightLine();
-  Pen heavyLine();
-  Pen heavyLineFS();
-  Pen dottedGridLine();
+  TypeSetter<T> baseLineSetter();
+  TypeSetter<T> bodySetter();
   Pen dashDotDotGridLine();
 
-  TypeSetter<T> titleSetter();
-  TypeSetter<T> headingSetter();
-  TypeSetter<T> bodySetter();
-  TypeSetter<T> baseLineSetter();
-
+  Pen dottedGridLine();
+  Font<T> getBodyFont();
   int getCmCount();
+  float getHalfHourGridLineBottom();
+  Font<T> getHeadingFont();
+  float getHourBoxCenterY();
+
+  float getHourBoxSize();
+  float getHourGridLineBottom();
+  int getHours();
   int getLinesPerHour();
 
-
-  float hLineLeft();
-  float hLineRight();
-  float hLineY(int i);
-  int getHours();
-
-  float getPartographTop();
   float getPartographBottom();
+  float getPartographCenterX();
+
+
   float getPartographCenterY();
   float getPartographHeight();
-
   float getPartographLeft();
   float getPartographRight();
-  float getPartographCenterX();
-  float getPartographWidth();
 
-  float getVerticalLineXForLine(int line);
+  float getPartographTop();
+  float getPartographWidth();
   float getPartographXForHour(float hour);
   float getPartographYForPosition(float position);
 
-  float getHourGridLineBottom();
-  float getHalfHourGridLineBottom();
   float getQuarterHourGridLineBottom();
-
-  float getTimeWriteInTop();
+  float getTimeWorksheetLabelY();
   float getTimeWriteInBottom();
   float getTimeWriteInCenterY();
-  float getTimeWorksheetLabelY();
 
-  @Deprecated
-  float getWidthPerHour();
-  float getHourBoxCenterY();
-  float getHourBoxSize();
-  float leftYAxisHashLabelX();
-  float rightYAxisHashLabelX();
+  float getTimeWriteInTop();
+  Font<T> getTitleFont();
+  float getVerticalLineXForLine(int line);
+
   float getXAxisLabelY();
+  TypeSetter<T> headingSetter();
+
+  Pen heavyLine();
+  Pen heavyLineFS();
+  float hLineLeft();
+  float hLineRight();
+
+  float hLineY(int i);
+  float leftYAxisHashLabelX();
+  Pen lightLine();
+  Pen lightLineFS();
+  float rightYAxisHashLabelX();
+  TypeSetter<T> titleSetter();
 }

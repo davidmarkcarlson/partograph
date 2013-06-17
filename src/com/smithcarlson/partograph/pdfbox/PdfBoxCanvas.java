@@ -84,6 +84,23 @@ public class PdfBoxCanvas implements Canvas<PdfBox> {
   }
 
   @Override
+  public void fillPolygon(PointList points, Color fillColor) throws IOException {
+    contentStream.setNonStrokingColor(fillColor);
+    float[] xPos = PdfBox.toPoints(points.getXPositions(), offsetX);
+    float[] yPos = PdfBox.toPoints(points.getYPositions(), offsetY, mediaBox.getHeight());
+    contentStream.fillPolygon(xPos, yPos);
+  }
+
+  @Override
+  public float width(String text, Font<PdfBox> font) throws IOException {
+    if (!(font instanceof PdfBoxFont)) {
+      throw new IllegalArgumentException("Bad PdfBoxFont!!");
+    }
+    return ((PdfBoxFont) font).getStringWidth(text);
+
+  }
+
+  @Override
   public void write(String string, float x, float y, float xShift, float yShift, float angle,
       Font<PdfBox> font, Color color) throws IOException {
     PdfBoxFont _font = (PdfBoxFont) font;
@@ -133,22 +150,5 @@ public class PdfBoxCanvas implements Canvas<PdfBox> {
       return (font.getLineHeight() - font.getAscenderHeight());
     }
     throw new IllegalStateException("Unknown vertical alignment type");
-  }
-
-  @Override
-  public void fillPolygon(PointList points, Color fillColor) throws IOException {
-    contentStream.setNonStrokingColor(fillColor);
-    float[] xPos = PdfBox.toPoints(points.getXPositions(), offsetX);
-    float[] yPos = PdfBox.toPoints(points.getYPositions(), offsetY, mediaBox.getHeight());
-    contentStream.fillPolygon(xPos, yPos);
-  }
-
-  @Override
-  public float width(String text, Font<PdfBox> font) throws IOException {
-    if (!(font instanceof PdfBoxFont)) {
-      throw new IllegalArgumentException("Bad PdfBoxFont!!");
-    }
-    return ((PdfBoxFont) font).getStringWidth(text);
-
   }
 }

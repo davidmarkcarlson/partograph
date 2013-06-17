@@ -59,6 +59,13 @@ public class SpecializedPartograph<T> {
     this.title = title;
   }
 
+  private void drawDystociaAlertPolygon(Canvas<T> canvas) throws IOException {
+    PointList points = base.createDystociaSequence(durations);
+    points.addPoint(base.layout.getPartographLeft(), base.layout.getPartographTop());
+    points.addPoint(base.layout.getPartographLeft(), base.layout.getPartographBottom());
+    canvas.fillPolygon(points, ALERT_AREA_COLOR);
+  }
+
   private void drawDystociaLine(Canvas<T> canvas) throws IOException {
     PointList points = base.createDystociaSequence(durations);
     points.addPoint(points.getCurrentX(), points.getCurrentY() - 0.12f);
@@ -87,13 +94,6 @@ public class SpecializedPartograph<T> {
     typesetter.write(text[1], points.getCurrentX(), baseline, canvas);
     baseline -= font.getLineHeight();
     typesetter.write(text[0], points.getCurrentX(), baseline, canvas);
-  }
-
-  private void drawDystociaAlertPolygon(Canvas<T> canvas) throws IOException {
-    PointList points = base.createDystociaSequence(durations);
-    points.addPoint(base.layout.getPartographLeft(), base.layout.getPartographTop());
-    points.addPoint(base.layout.getPartographLeft(), base.layout.getPartographBottom());
-    canvas.fillPolygon(points, ALERT_AREA_COLOR);
   }
 
 }

@@ -14,6 +14,42 @@ public class BasePartograph<T> {
 
   Layout<T> layout;
 
+  public PointList createDystociaSequence(float[] durations) {
+    PointList points = new PointList();
+    float x = layout.getPartographLeft();
+    float y = layout.getPartographBottom();
+
+    int increments = layout.getCmCount() - 1;
+    float cumulativeTime = 0f;
+    points.addPoint(x, y);
+    int i = 0;
+    while (i < increments) {
+      // h line
+      cumulativeTime += durations[i];
+      x = layout.getPartographXForHour(cumulativeTime);
+      points.addPoint(x, y);
+
+      i++;
+      // v offset
+      y = layout.getPartographYForPosition(i);
+      points.addPoint(x, y);
+    }
+    return points;
+  }
+
+  public void drawDystociaActionPolygon(float[] durations, Color color, Canvas<T> canvas)
+      throws IOException {
+    PointList points = createDystociaSequence(durations);
+    points.addPoint(layout.getPartographRight(), layout.getPartographTop());
+    points.addPoint(layout.getPartographRight(), layout.getPartographBottom());
+    points.addPoint(layout.getPartographLeft(), layout.getPartographBottom());
+    canvas.fillPolygon(points, color);
+  }
+
+  public void setLayout(Layout<T> layout) {
+    this.layout = layout;
+  }
+
   void drawHorizGridLines(Canvas<T> canvas) throws IOException {
     float left = layout.getPartographLeft();
     float right = layout.getPartographRight();
@@ -23,19 +59,32 @@ public class BasePartograph<T> {
     }
   }
 
-  void drawVertGridLines(Canvas<T> canvas) throws IOException {
+  void drawLeftYAxis(Canvas<T> canvas) throws IOException {
     Layout<T> l = layout;
-    int vertLines = (l.getHours() * 4) + 1;
+    float left = l.hLineLeft();
+    float right = l.getPartographLeft();
 
-    float top = l.getPartographTop();
-    float bottom = l.getPartographBottom();
+    for (int i = 0; i < l.getCmCount(); i++) {
+      float y = l.hLineY(i);
+      l.lightLine().drawLine(left, y, right, y, canvas);
+      l.baseLineSetter()
+          .with(HorizontalAlignment.RIGHT)
+          .write(new String[] { "Earlier Start 4", "Direct Start 5", "6", "7", "8", "9", "10" }[i],
+              l.leftYAxisHashLabelX(), y, canvas);
+    }
+  }
 
-    Pen[] penMap = new Pen[] { l.heavyLine(), l.dottedGridLine(), l.dashDotDotGridLine(),
-        l.dottedGridLine() };
-
-    for (int i = 0; i < vertLines; i++) {
-      float x = layout.getVerticalLineXForLine(i);
-      penMap[i % 4].drawLine(x, top, x, bottom, canvas);
+  void drawRightYAxis(Canvas<T> canvas) throws IOException {
+    Layout<T> l = layout;
+    float left = l.getPartographRight();
+    float right = l.hLineRight();
+    for (int i = 0; i < l.getCmCount(); i++) {
+      float y = l.hLineY(i);
+      l.lightLine().drawLine(left, y, right, y, canvas);
+      l.baseLineSetter()
+          .with(HorizontalAlignment.LEFT)
+          .write(new String[] { "+3 or lower", "+2", "+1", "0", "-1", "-2", "-3 or higher" }[i],
+              l.rightYAxisHashLabelX(), y, canvas);
     }
   }
 
@@ -86,52 +135,20 @@ public class BasePartograph<T> {
         .write("Time (hrs)", l.getPartographCenterX(), l.getTimeWorksheetLabelY(), canvas);
   }
 
-  void drawLeftYAxis(Canvas<T> canvas) throws IOException {
+  void drawVertGridLines(Canvas<T> canvas) throws IOException {
     Layout<T> l = layout;
-    float left = l.hLineLeft();
-    float right = l.getPartographLeft();
+    int vertLines = (l.getHours() * 4) + 1;
 
-    for (int i = 0; i < l.getCmCount(); i++) {
-      float y = l.hLineY(i);
-      l.lightLine().drawLine(left, y, right, y, canvas);
-      l.baseLineSetter()
-          .with(HorizontalAlignment.RIGHT)
-          .write(new String[] { "Earlier Start 4", "Direct Start 5", "6", "7", "8", "9", "10" }[i],
-              l.leftYAxisHashLabelX(), y, canvas);
+    float top = l.getPartographTop();
+    float bottom = l.getPartographBottom();
+
+    Pen[] penMap = new Pen[] { l.heavyLine(), l.dottedGridLine(), l.dashDotDotGridLine(),
+        l.dottedGridLine() };
+
+    for (int i = 0; i < vertLines; i++) {
+      float x = layout.getVerticalLineXForLine(i);
+      penMap[i % 4].drawLine(x, top, x, bottom, canvas);
     }
-  }
-
-  void drawRightYAxis(Canvas<T> canvas) throws IOException {
-    Layout<T> l = layout;
-    float left = l.getPartographRight();
-    float right = l.hLineRight();
-    for (int i = 0; i < l.getCmCount(); i++) {
-      float y = l.hLineY(i);
-      l.lightLine().drawLine(left, y, right, y, canvas);
-      l.baseLineSetter()
-          .with(HorizontalAlignment.LEFT)
-          .write(new String[] { "+3 or lower", "+2", "+1", "0", "-1", "-2", "-3 or higher" }[i],
-              l.rightYAxisHashLabelX(), y, canvas);
-    }
-  }
-
-  void labelRightAxis(Canvas<T> canvas) throws IOException {
-    float top = layout.getPartographTop();
-    float bottom = layout.getPartographBottom();
-
-    float line1XPos = layout.getPartographRight() + 1.0f;
-    String line1Text = "Fetal Station";
-    LayoutTool<T> tool = new LayoutTool<T>(layout.lightLine(), layout.headingSetter());
-    tool.writeOn(line1Text, line1XPos, top, line1XPos, bottom, true, canvas);
-
-    float line2XPos = line1XPos - layout.getHeadingFont().getLineHeight();
-    tool.writeOn("[Plot O]", line2XPos, top, line2XPos, bottom, false, canvas);
-
-    float left = line1XPos - layout.getHeadingFont().getLineHeight();
-    float right = line1XPos + layout.getHeadingFont().getLineHeight();
-
-    layout.lightLine().drawLine(left, top, right, top, canvas);
-    layout.lightLine().drawLine(left, bottom, right, bottom, canvas);
   }
 
   void labelLeftYAxis(Canvas<T> canvas) throws IOException {
@@ -153,40 +170,23 @@ public class BasePartograph<T> {
     layout.lightLine().drawLine(left, bottom, right, bottom, canvas);
   }
 
-  public void setLayout(Layout<T> layout) {
-    this.layout = layout;
-  }
+  void labelRightAxis(Canvas<T> canvas) throws IOException {
+    float top = layout.getPartographTop();
+    float bottom = layout.getPartographBottom();
 
-  public PointList createDystociaSequence(float[] durations) {
-    PointList points = new PointList();
-    float x = layout.getPartographLeft();
-    float y = layout.getPartographBottom();
+    float line1XPos = layout.getPartographRight() + 1.0f;
+    String line1Text = "Fetal Station";
+    LayoutTool<T> tool = new LayoutTool<T>(layout.lightLine(), layout.headingSetter());
+    tool.writeOn(line1Text, line1XPos, top, line1XPos, bottom, true, canvas);
 
-    int increments = layout.getCmCount() - 1;
-    float cumulativeTime = 0f;
-    points.addPoint(x, y);
-    int i = 0;
-    while (i < increments) {
-      // h line
-      cumulativeTime += durations[i];
-      x = layout.getPartographXForHour(cumulativeTime);
-      points.addPoint(x, y);
+    float line2XPos = line1XPos - layout.getHeadingFont().getLineHeight();
+    tool.writeOn("[Plot O]", line2XPos, top, line2XPos, bottom, false, canvas);
 
-      i++;
-      // v offset
-      y = layout.getPartographYForPosition(i);
-      points.addPoint(x, y);
-    }
-    return points;
-  }
+    float left = line1XPos - layout.getHeadingFont().getLineHeight();
+    float right = line1XPos + layout.getHeadingFont().getLineHeight();
 
-  public void drawDystociaActionPolygon(float[] durations, Color color, Canvas<T> canvas)
-      throws IOException {
-    PointList points = createDystociaSequence(durations);
-    points.addPoint(layout.getPartographRight(), layout.getPartographTop());
-    points.addPoint(layout.getPartographRight(), layout.getPartographBottom());
-    points.addPoint(layout.getPartographLeft(), layout.getPartographBottom());
-    canvas.fillPolygon(points, color);
+    layout.lightLine().drawLine(left, top, right, top, canvas);
+    layout.lightLine().drawLine(left, bottom, right, bottom, canvas);
   }
 
 }

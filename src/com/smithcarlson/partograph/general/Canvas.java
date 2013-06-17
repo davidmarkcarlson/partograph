@@ -2,8 +2,6 @@ package com.smithcarlson.partograph.general;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Represents an abstract rendering surface.
@@ -16,6 +14,10 @@ import java.util.Map;
 public interface Canvas<T> {
   enum HorizontalAlignment {
     CENTER, LEFT, RIGHT
+  }
+
+  enum Line {
+    TOP, HORIZ_CENTER, BOTTOM, LEFT, VERT_CENTER, RIGHT
   }
 
   enum LineCapStyle {
@@ -36,10 +38,6 @@ public interface Canvas<T> {
 
   enum VerticalAlignment {
     BOTTOM, BASELINE, CENTER, TOP
-  }
-
-  enum Line {
-    TOP, HORIZ_CENTER, BOTTOM, LEFT, VERT_CENTER, RIGHT
   }
 
   public static final float BOTTOM_TO_TOP = (float) Math.PI * 0.5f, LEFT_TO_RIGHT = 0,

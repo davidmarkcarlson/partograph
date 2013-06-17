@@ -20,26 +20,6 @@ public class Pen {
     this.lineCapStyle = lineCapStyle;
   }
 
-  public <T> void drawLine(float x1, float y1, float x2, float y2, Canvas<T> c) throws IOException {
-    c.drawLine(x1, y1, x2, y2, lineThickness, linePattern, color, lineCapStyle);
-  }
-
-  public float getLineThickness() {
-    return lineThickness;
-  }
-
-  public Color getColor() {
-    return color;
-  }
-
-  public Canvas.LinePattern getLinePattern() {
-    return linePattern;
-  }
-
-  public Canvas.LineCapStyle getLineCapStyle() {
-    return lineCapStyle;
-  }
-
   public <T> void drawBox(float box_x1, float box_x2, float box_y1, float box_y2, Canvas<T> canvas)
       throws IOException {
     canvas
@@ -55,6 +35,26 @@ public class Pen {
   public <T> void drawBoxAround(float x, float y, float width, float height, Canvas<T> canvas)
       throws IOException {
     drawBox(x - (width / 2f), x + (width / 2f), y - (height / 2f), y + (height / 2f), canvas);
+  }
+
+  public <T> void drawLine(float x1, float y1, float x2, float y2, Canvas<T> c) throws IOException {
+    c.drawLine(x1, y1, x2, y2, lineThickness, linePattern, color, lineCapStyle);
+  }
+
+  public Color getColor() {
+    return color;
+  }
+
+  public Canvas.LineCapStyle getLineCapStyle() {
+    return lineCapStyle;
+  }
+
+  public Canvas.LinePattern getLinePattern() {
+    return linePattern;
+  }
+
+  public float getLineThickness() {
+    return lineThickness;
   }
 
   public Pen with(Color newColor) {

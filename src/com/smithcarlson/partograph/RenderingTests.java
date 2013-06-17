@@ -41,16 +41,20 @@ public class RenderingTests {
     document.close();
   }
 
+  private static void drawRefLine(float yPos, PdfBoxCanvas c) throws IOException {
+    c.drawLine(0.5f, yPos, 1.0f, yPos, 0.25f, LinePattern.SOLID, Color.BLACK,
+        Canvas.LineCapStyle.BUTT);
+  }
+
   private static void fontTest(PdfBoxCanvas c) throws IOException {
     float baseline = 1;
     PdfBoxFont f = new PdfBoxFont(PDType1Font.HELVETICA, 24f);
     TypeSetter<PdfBox> typesetter = new TypeSetter<PdfBox>(HorizontalAlignment.LEFT,
         VerticalAlignment.BASELINE, f, Color.BLACK);
-    typesetter.with(title).write("Font positioning tests",  1, baseline, c);
-
+    typesetter.with(title).write("Font positioning tests", 1, baseline, c);
 
     baseline += f.getLineHeight();
-    typesetter.write("Blog",  1, baseline, c);
+    typesetter.write("Blog", 1, baseline, c);
     drawRefLine(baseline, c);
     drawRefLine(baseline - f.getXHeight(), c);
     drawRefLine(baseline - f.getAscenderHeight(), c);
@@ -59,26 +63,21 @@ public class RenderingTests {
     drawRefLine(baseline + f.getLineHeight() - f.getAscenderHeight(), c);
 
     baseline += f.getLineHeight();
-    typesetter.write("Blog",  1, baseline, c);
+    typesetter.write("Blog", 1, baseline, c);
     drawRefLine(baseline, c);
 
     baseline += f.getLineHeight();
-    typesetter.write("Blog",  1, baseline, c);
+    typesetter.write("Blog", 1, baseline, c);
     drawRefLine(baseline - f.getCenterY(), c);
 
     baseline += 1.5f * f.getLineHeight();
     c.drawLine(1.0f, baseline, 3.0f, baseline, 0.25f, LinePattern.SOLID, Color.BLACK,
         Canvas.LineCapStyle.BUTT);
-    typesetter.with(VerticalAlignment.BOTTOM).write("Bg",  1.0f, baseline, c);
-    typesetter.with(VerticalAlignment.BASELINE).write("Bg",  1.5f, baseline, c);
-    typesetter.with(VerticalAlignment.CENTER).write("Bg",  2.0f, baseline, c);
-    typesetter.with(VerticalAlignment.TOP).write("Bg",  2.5f, baseline, c);
+    typesetter.with(VerticalAlignment.BOTTOM).write("Bg", 1.0f, baseline, c);
+    typesetter.with(VerticalAlignment.BASELINE).write("Bg", 1.5f, baseline, c);
+    typesetter.with(VerticalAlignment.CENTER).write("Bg", 2.0f, baseline, c);
+    typesetter.with(VerticalAlignment.TOP).write("Bg", 2.5f, baseline, c);
 
-  }
-
-  private static void drawRefLine(float yPos, PdfBoxCanvas c) throws IOException {
-    c.drawLine(0.5f, yPos, 1.0f, yPos, 0.25f, LinePattern.SOLID, Color.BLACK,
-        Canvas.LineCapStyle.BUTT);
   }
 
   private static void writeOnLineTest(PdfBoxCanvas canvas) throws IOException {
@@ -88,33 +87,34 @@ public class RenderingTests {
     TypeSetter<PdfBox> typesetter = new TypeSetter<PdfBox>(HorizontalAlignment.LEFT,
         VerticalAlignment.BASELINE, f, Color.BLACK);
 
+    Pen pen = new Pen(0.5f, Color.BLACK, LinePattern.SOLID, LineCapStyle.PROJECTING_SQUARE);
     typesetter.with(title).write("Write on line tests", 0, baseline, canvas);
+    LayoutTool<PdfBox> layoutTool = new LayoutTool<PdfBox>(pen, typesetter.with(
+        HorizontalAlignment.LEFT).with(VerticalAlignment.BASELINE));
 
     baseline += f.getLineHeight();
 
-    Pen pen = new Pen(0.5f, Color.BLACK, LinePattern.SOLID, LineCapStyle.PROJECTING_SQUARE);
-
     float x1 = 0f, x2 = 4f;
-    new LayoutTool<PdfBox>(pen, typesetter.with(HorizontalAlignment.LEFT).with(
-        VerticalAlignment.BASELINE)).writeOn("Tig", x1, baseline, x2, baseline, false, canvas);
-    new LayoutTool<PdfBox>(pen, typesetter.with(HorizontalAlignment.CENTER).with(
-        VerticalAlignment.CENTER)).writeOn("Tig", x1, baseline, x2, baseline, true, canvas);
-    new LayoutTool<PdfBox>(pen, typesetter.with(HorizontalAlignment.RIGHT).with(
-        VerticalAlignment.TOP)).writeOn("Tig", x1, baseline, x2, baseline, false, canvas);
+    layoutTool.with(HorizontalAlignment.LEFT).with(VerticalAlignment.BASELINE)
+        .writeOn("Tig", x1, baseline, x2, baseline, false, canvas);
+    layoutTool.with(HorizontalAlignment.CENTER).with(VerticalAlignment.CENTER)
+        .writeOn("Tig", x1, baseline, x2, baseline, true, canvas);
+    layoutTool.with(HorizontalAlignment.RIGHT).with(VerticalAlignment.TOP)
+        .writeOn("Tig", x1, baseline, x2, baseline, false, canvas);
 
     baseline += f.getLineHeight();
     float y2 = baseline + 2.0f;
-    new LayoutTool<PdfBox>(pen, typesetter.with(HorizontalAlignment.LEFT).with(
-        VerticalAlignment.BASELINE)).writeOn("Tig", x1, baseline, x2, y2, false, canvas);
-    new LayoutTool<PdfBox>(pen, typesetter.with(HorizontalAlignment.CENTER).with(
-        VerticalAlignment.CENTER)).writeOn("Tig", x1, baseline, x2, y2, true, canvas);
-    new LayoutTool<PdfBox>(pen, typesetter.with(HorizontalAlignment.RIGHT).with(
-        VerticalAlignment.TOP)).writeOn("Tig", x1, baseline, x2, y2, false, canvas);
+    layoutTool.with(HorizontalAlignment.LEFT).with(VerticalAlignment.BASELINE)
+        .writeOn("Tig", x1, baseline, x2, y2, false, canvas);
+    layoutTool.with(HorizontalAlignment.CENTER).with(VerticalAlignment.CENTER)
+        .writeOn("Tig", x1, baseline, x2, y2, true, canvas);
+    layoutTool.with(HorizontalAlignment.RIGHT).with(VerticalAlignment.TOP)
+        .writeOn("Tig", x1, baseline, x2, y2, false, canvas);
 
-    new LayoutTool<PdfBox>(pen, typesetter.with(HorizontalAlignment.RIGHT).with(
-        VerticalAlignment.TOP)).writeOn("Tig", x1, y2, x2, baseline, true, canvas);
+    layoutTool.with(HorizontalAlignment.RIGHT).with(VerticalAlignment.TOP)
+        .writeOn("Tig", x1, y2, x2, baseline, true, canvas);
 
-    new LayoutTool<PdfBox>(pen, typesetter.with(HorizontalAlignment.LEFT).with(
-        VerticalAlignment.TOP)).writeOn("Tig", x1, y2, x1, baseline, true, canvas);
+    layoutTool.with(HorizontalAlignment.LEFT).with(VerticalAlignment.TOP)
+        .writeOn("Tig", x1, y2, x1, baseline, true, canvas);
   }
 }

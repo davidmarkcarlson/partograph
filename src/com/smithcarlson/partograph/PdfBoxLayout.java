@@ -15,10 +15,48 @@ import com.smithcarlson.partograph.general.TypeSetter;
 import com.smithcarlson.partograph.pdfbox.PdfBox;
 import com.smithcarlson.partograph.pdfbox.PdfBoxFont;
 
-public class PdfBoxLayout extends BaseLayout<PdfBox> implements Layout<PdfBox> {
+public class PdfBoxLayout implements Layout<PdfBox> {
   private final Font<PdfBox> titleFont;
   private final Font<PdfBox> headingFont;
   private final Font<PdfBox> bodyFont;
+
+  int cmCount;
+  int hours;
+  int linesPerHour;
+
+  Pen lightLine;
+  Pen lightLineFS;
+  Pen heavyLine;
+  Pen heavyLineFS;
+  Pen dottedGridLine;
+  Pen dashDotDotGridLine;
+
+  TypeSetter<PdfBox> titleSetter;
+  TypeSetter<PdfBox> headingSetter;
+  TypeSetter<PdfBox> bodySetter;
+
+  float partographTop;
+  float partographBottom;
+  float partographHeight;
+  float partographCenterY;
+  float heightPerCm;
+
+  float partographLeft;
+  float partographRight;
+  float partographWidth;
+  float partographCenterX;
+  float widthPerHour;
+
+  float xAxisOverhang;
+  float xAxisMargin;
+
+  float yAxisOverhang;
+  float yAxisMargin;
+
+  float spaceToHourBoxes;
+  float halfHourOverhang;
+  float hourBoxSize;
+  float timeSpace;
 
   public PdfBoxLayout() throws IOException {
     hours = 20;
@@ -66,18 +104,23 @@ public class PdfBoxLayout extends BaseLayout<PdfBox> implements Layout<PdfBox> {
   }
 
   @Override
-  public int getCmCount() {
-    return cmCount;
+  public TypeSetter<PdfBox> baseLineSetter() {
+    return bodySetter.with(VerticalAlignment.BASELINE);
   }
 
   @Override
-  public Font<PdfBox> getTitleFont() {
-    return titleFont;
+  public TypeSetter<PdfBox> bodySetter() {
+    return bodySetter;
   }
 
   @Override
-  public Font<PdfBox> getHeadingFont() {
-    return headingFont;
+  public Pen dashDotDotGridLine() {
+    return dashDotDotGridLine;
+  }
+
+  @Override
+  public Pen dottedGridLine() {
+    return dottedGridLine;
   }
 
   @Override
@@ -86,8 +129,43 @@ public class PdfBoxLayout extends BaseLayout<PdfBox> implements Layout<PdfBox> {
   }
 
   @Override
-  public float getPartographTop() {
-    return partographTop;
+  public int getCmCount() {
+    return cmCount;
+  }
+
+  @Override
+  public float getHalfHourGridLineBottom() {
+    return partographBottom + halfHourOverhang;
+  }
+
+  @Override
+  public Font<PdfBox> getHeadingFont() {
+    return headingFont;
+  }
+
+  @Override
+  public float getHourBoxCenterY() {
+    return partographBottom + spaceToHourBoxes + (hourBoxSize / 2f);
+  }
+
+  @Override
+  public float getHourBoxSize() {
+    return hourBoxSize;
+  }
+
+  @Override
+  public float getHourGridLineBottom() {
+    return partographBottom + spaceToHourBoxes;
+  }
+
+  @Override
+  public int getHours() {
+    return hours;
+  }
+
+  @Override
+  public int getLinesPerHour() {
+    return linesPerHour;
   }
 
   @Override
@@ -96,13 +174,18 @@ public class PdfBoxLayout extends BaseLayout<PdfBox> implements Layout<PdfBox> {
   }
 
   @Override
-  public float getPartographHeight() {
-    return partographHeight;
+  public float getPartographCenterX() {
+    return partographCenterX;
   }
 
   @Override
   public float getPartographCenterY() {
     return partographCenterY;
+  }
+
+  @Override
+  public float getPartographHeight() {
+    return partographHeight;
   }
 
   @Override
@@ -116,18 +199,78 @@ public class PdfBoxLayout extends BaseLayout<PdfBox> implements Layout<PdfBox> {
   }
 
   @Override
+  public float getPartographTop() {
+    return partographTop;
+  }
+
+  @Override
   public float getPartographWidth() {
     return partographWidth;
   }
 
   @Override
-  public float getPartographCenterX() {
-    return partographCenterX;
+  public float getPartographXForHour(float hour) {
+    return getPartographLeft() + (hour * widthPerHour);
   }
 
   @Override
-  public int getHours() {
-    return hours;
+  public float getPartographYForPosition(float position) {
+    return partographBottom - (position * heightPerCm);
+  }
+
+  @Override
+  public float getQuarterHourGridLineBottom() {
+    return partographBottom;
+  }
+
+  @Override
+  public float getTimeWorksheetLabelY() {
+    return getTimeWriteInBottom() + headingFont.getLineHeight();
+  }
+
+  @Override
+  public float getTimeWriteInBottom() {
+    return partographBottom + spaceToHourBoxes + hourBoxSize + timeSpace;
+  }
+
+  @Override
+  public float getTimeWriteInCenterY() {
+    return partographBottom + spaceToHourBoxes + hourBoxSize + timeSpace / 2f;
+  }
+
+  @Override
+  public float getTimeWriteInTop() {
+    return partographBottom + spaceToHourBoxes + hourBoxSize;
+  }
+
+  @Override
+  public Font<PdfBox> getTitleFont() {
+    return titleFont;
+  }
+
+  @Override
+  public float getVerticalLineXForLine(int position) {
+    return getPartographLeft() + ((position * widthPerHour) / linesPerHour);
+  }
+
+  @Override
+  public float getXAxisLabelY() {
+    return partographBottom + headingFont.getLineHeight();
+  }
+
+  @Override
+  public TypeSetter<PdfBox> headingSetter() {
+    return headingSetter;
+  }
+
+  @Override
+  public Pen heavyLine() {
+    return heavyLine;
+  }
+
+  @Override
+  public Pen heavyLineFS() {
+    return heavyLineFS;
   }
 
   @Override
@@ -146,84 +289,8 @@ public class PdfBoxLayout extends BaseLayout<PdfBox> implements Layout<PdfBox> {
   }
 
   @Override
-  public int getLinesPerHour() {
-    return linesPerHour;
-  }
-
-  @Override
-  public float getVerticalLineXForLine(int position) {
-    return getPartographLeft() + ((position * widthPerHour) / linesPerHour);
-  }
-
-  @Override
-  public float getPartographXForHour(float hour) {
-    return getPartographLeft() + (hour * widthPerHour);
-  }
-
-  @Override
-  public float getHourGridLineBottom() {
-    return partographBottom + spaceToHourBoxes;
-  }
-
-  @Override
-  public float getHalfHourGridLineBottom() {
-    return partographBottom + halfHourOverhang;
-  }
-
-  @Override
-  public float getQuarterHourGridLineBottom() {
-    return partographBottom;
-  }
-
-  @Override
-  public float getTimeWriteInTop() {
-    return partographBottom + spaceToHourBoxes + hourBoxSize;
-  }
-
-  @Override
-  public float getTimeWriteInBottom() {
-    return partographBottom + spaceToHourBoxes + hourBoxSize + timeSpace;
-  }
-
-  @Override
-  public float getTimeWriteInCenterY() {
-    return partographBottom + spaceToHourBoxes + hourBoxSize + timeSpace / 2f;
-  }
-
-  @Override
-  @Deprecated
-  public float getWidthPerHour() {
-    return widthPerHour;
-  }
-
-  @Override
-  public float getHourBoxCenterY() {
-    return partographBottom + spaceToHourBoxes + (hourBoxSize / 2f);
-  }
-
-  @Override
-  public float getHourBoxSize() {
-    return hourBoxSize;
-  }
-
-  @Override
   public float leftYAxisHashLabelX() {
     return partographLeft - (yAxisOverhang + yAxisMargin);
-  }
-
-  @Override
-  public float rightYAxisHashLabelX() {
-    return partographRight + (yAxisOverhang + yAxisMargin);
-  }
-
-  @Override
-  public float getPartographYForPosition(float position) {
-    return partographBottom - (position * heightPerCm);
-  }
-
-  @Override
-  public Pen lightLineFS() {
-    return lightLineFS;
   }
 
   @Override
@@ -232,52 +299,17 @@ public class PdfBoxLayout extends BaseLayout<PdfBox> implements Layout<PdfBox> {
   }
 
   @Override
-  public Pen heavyLine() {
-    return heavyLine;
+  public Pen lightLineFS() {
+    return lightLineFS;
   }
 
   @Override
-  public Pen heavyLineFS() {
-    return heavyLineFS;
-  }
-
-  @Override
-  public Pen dottedGridLine() {
-    return dottedGridLine;
-  }
-
-  @Override
-  public Pen dashDotDotGridLine() {
-    return dashDotDotGridLine;
-  }
-
-  @Override
-  public float getXAxisLabelY() {
-    return partographBottom + headingFont.getLineHeight();
-  }
-
-  @Override
-  public float getTimeWorksheetLabelY() {
-    return getTimeWriteInBottom() + headingFont.getLineHeight();
+  public float rightYAxisHashLabelX() {
+    return partographRight + (yAxisOverhang + yAxisMargin);
   }
 
   @Override
   public TypeSetter<PdfBox> titleSetter() {
     return titleSetter;
-  }
-
-  @Override
-  public TypeSetter<PdfBox> headingSetter() {
-    return headingSetter;
-  }
-
-  @Override
-  public TypeSetter<PdfBox> bodySetter() {
-    return bodySetter;
-  }
-
-  @Override
-  public TypeSetter<PdfBox> baseLineSetter() {
-    return bodySetter.with(VerticalAlignment.BASELINE);
   }
 }

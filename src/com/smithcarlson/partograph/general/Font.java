@@ -4,19 +4,19 @@ import java.io.IOException;
 
 public interface Font<T> {
 
-  float getLineHeight();
-
-  float getStringWidth(String line1Text) throws IOException;
-
   float getAscenderHeight();
-
-  float getSizePts();
-
-  float getDescenderHeight();
-
-  float getXHeight();
 
   float getCenterY();
 
   float getDescender();
+
+  float getDescenderHeight();
+
+  float getLineHeight();
+
+  float getSizePts();
+
+  float getStringWidth(String line1Text) throws IOException;
+
+  float getXHeight();
 }

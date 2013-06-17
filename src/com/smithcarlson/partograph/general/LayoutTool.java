@@ -2,6 +2,9 @@ package com.smithcarlson.partograph.general;
 
 import java.io.IOException;
 
+import com.smithcarlson.partograph.general.Canvas.HorizontalAlignment;
+import com.smithcarlson.partograph.general.Canvas.VerticalAlignment;
+
 public class LayoutTool<T> {
   private final Pen pen;
   private final TypeSetter<T> typeSetter;
@@ -10,6 +13,14 @@ public class LayoutTool<T> {
     super();
     this.pen = pen;
     this.typeSetter = typeSetter;
+  }
+
+  public LayoutTool<T> with(HorizontalAlignment hAlign) {
+    return new LayoutTool<T>(pen, typeSetter.with(hAlign));
+  }
+
+  public LayoutTool<T> with(VerticalAlignment vAlign) {
+    return new LayoutTool<T>(pen, typeSetter.with(vAlign));
   }
 
   public void writeOn(String text, float x1, float y1, float x2, float y2, boolean drawLine,
