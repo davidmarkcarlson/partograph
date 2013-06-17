@@ -2,6 +2,8 @@ package com.smithcarlson.partograph.general;
 
 import java.awt.Color;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Represents an abstract rendering surface.
@@ -40,15 +42,15 @@ public interface Canvas<T> {
     TOP, HORIZ_CENTER, BOTTOM, LEFT, VERT_CENTER, RIGHT
   }
 
+  public static final float BOTTOM_TO_TOP = (float) Math.PI * 0.5f, LEFT_TO_RIGHT = 0,
+      TOP_TO_BOTTOM = (float) Math.PI * -0.5f;
+
   void drawLine(float x1, float y1, float x2, float y2, float lineWidth, LinePattern linePattern,
       Color color, LineCapStyle capStyle) throws IOException;
 
   void fillPolygon(PointList points, Color fillColor) throws IOException;
 
   float width(String text, Font<T> font) throws IOException;
-
-  void write(String string, Orientation orientation, HorizontalAlignment halign,
-      VerticalAlignment valign, float x, float y, Font<T> font, Color color) throws IOException;
 
   void write(String string, float x, float y, float xShift, float yShift, float angle,
       Font<T> font, Color color) throws IOException;

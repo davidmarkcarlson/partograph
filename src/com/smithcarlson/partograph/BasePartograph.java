@@ -5,7 +5,6 @@ import java.io.IOException;
 
 import com.smithcarlson.partograph.general.Canvas;
 import com.smithcarlson.partograph.general.Canvas.HorizontalAlignment;
-import com.smithcarlson.partograph.general.Canvas.Orientation;
 import com.smithcarlson.partograph.general.Canvas.VerticalAlignment;
 import com.smithcarlson.partograph.general.LayoutTool;
 import com.smithcarlson.partograph.general.Pen;
@@ -73,15 +72,17 @@ public class BasePartograph<T> {
       penMap[i % 4].drawLine(x, writeInTop, x, writeInBottom, canvas);
     }
 
-    l.bodySetter().hAlign(HorizontalAlignment.RIGHT)
+    l.bodySetter().with(HorizontalAlignment.RIGHT)
         .write("Hour", l.leftYAxisHashLabelX(), l.getHourBoxCenterY(), canvas);
-    l.bodySetter().orient(Orientation.BOTTOM_TO_TOP).vAlign(VerticalAlignment.BOTTOM)
-        .write("Time", l.leftYAxisHashLabelX(), l.getTimeWriteInCenterY(), canvas);
+    l.bodySetter()
+        .with(VerticalAlignment.BOTTOM)
+        .write("Time", l.leftYAxisHashLabelX(), l.getTimeWriteInCenterY(), Canvas.BOTTOM_TO_TOP,
+            canvas);
 
     // bottom line under "Time" label
     l.heavyLineFS().drawLine(l.hLineLeft(), l.getTimeWriteInBottom(), l.getPartographRight(),
         l.getTimeWriteInBottom(), canvas);
-    l.headingSetter().vAlign(VerticalAlignment.TOP)
+    l.headingSetter().with(VerticalAlignment.TOP)
         .write("Time (hrs)", l.getPartographCenterX(), l.getTimeWorksheetLabelY(), canvas);
   }
 
@@ -94,7 +95,7 @@ public class BasePartograph<T> {
       float y = l.hLineY(i);
       l.lightLine().drawLine(left, y, right, y, canvas);
       l.baseLineSetter()
-          .hAlign(HorizontalAlignment.RIGHT)
+          .with(HorizontalAlignment.RIGHT)
           .write(new String[] { "Earlier Start 4", "Direct Start 5", "6", "7", "8", "9", "10" }[i],
               l.leftYAxisHashLabelX(), y, canvas);
     }
@@ -108,7 +109,7 @@ public class BasePartograph<T> {
       float y = l.hLineY(i);
       l.lightLine().drawLine(left, y, right, y, canvas);
       l.baseLineSetter()
-          .hAlign(HorizontalAlignment.LEFT)
+          .with(HorizontalAlignment.LEFT)
           .write(new String[] { "+3 or lower", "+2", "+1", "0", "-1", "-2", "-3 or higher" }[i],
               l.rightYAxisHashLabelX(), y, canvas);
     }

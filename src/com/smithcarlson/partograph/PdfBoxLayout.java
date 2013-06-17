@@ -8,7 +8,6 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import com.smithcarlson.partograph.general.Canvas.HorizontalAlignment;
 import com.smithcarlson.partograph.general.Canvas.LineCapStyle;
 import com.smithcarlson.partograph.general.Canvas.LinePattern;
-import com.smithcarlson.partograph.general.Canvas.Orientation;
 import com.smithcarlson.partograph.general.Canvas.VerticalAlignment;
 import com.smithcarlson.partograph.general.Font;
 import com.smithcarlson.partograph.general.Pen;
@@ -30,12 +29,12 @@ public class PdfBoxLayout extends BaseLayout<PdfBox> implements Layout<PdfBox> {
     headingFont = new PdfBoxFont(PDType1Font.HELVETICA, 8f);
     bodyFont = new PdfBoxFont(PDType1Font.HELVETICA, 7f);
 
-    titleSetter = new TypeSetter<PdfBox>(Orientation.LEFT_TO_RIGHT, HorizontalAlignment.CENTER,
-        VerticalAlignment.CENTER, bodyFont, Color.BLACK);
-    headingSetter = new TypeSetter<PdfBox>(Orientation.LEFT_TO_RIGHT, HorizontalAlignment.CENTER,
-        VerticalAlignment.CENTER, bodyFont, Color.BLACK);
-    bodySetter = new TypeSetter<PdfBox>(Orientation.LEFT_TO_RIGHT, HorizontalAlignment.CENTER,
-        VerticalAlignment.CENTER, bodyFont, Color.BLACK);
+    titleSetter = new TypeSetter<PdfBox>(HorizontalAlignment.CENTER, VerticalAlignment.CENTER,
+        bodyFont, Color.BLACK);
+    headingSetter = new TypeSetter<PdfBox>(HorizontalAlignment.CENTER, VerticalAlignment.CENTER,
+        bodyFont, Color.BLACK);
+    bodySetter = new TypeSetter<PdfBox>(HorizontalAlignment.CENTER, VerticalAlignment.CENTER,
+        bodyFont, Color.BLACK);
 
     lightLineFS = new Pen(0.5f, Color.BLACK, LinePattern.SOLID, LineCapStyle.PROJECTING_SQUARE);
     lightLine = new Pen(0.5f, Color.BLACK, LinePattern.SOLID, LineCapStyle.BUTT);
@@ -257,7 +256,6 @@ public class PdfBoxLayout extends BaseLayout<PdfBox> implements Layout<PdfBox> {
     return partographBottom + headingFont.getLineHeight();
   }
 
-
   @Override
   public float getTimeWorksheetLabelY() {
     return getTimeWriteInBottom() + headingFont.getLineHeight();
@@ -280,6 +278,6 @@ public class PdfBoxLayout extends BaseLayout<PdfBox> implements Layout<PdfBox> {
 
   @Override
   public TypeSetter<PdfBox> baseLineSetter() {
-    return bodySetter.vAlign(VerticalAlignment.BASELINE);
+    return bodySetter.with(VerticalAlignment.BASELINE);
   }
 }

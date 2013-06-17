@@ -6,11 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.smithcarlson.partograph.general.Canvas.HorizontalAlignment;
-import com.smithcarlson.partograph.general.Canvas.Orientation;
 import com.smithcarlson.partograph.general.Canvas.VerticalAlignment;
 
 public class TypeSetter<T> {
-  private final Orientation orientation;
   private final HorizontalAlignment halign;
   private final VerticalAlignment valign;
   private final Font<T> font;
@@ -42,9 +40,7 @@ public class TypeSetter<T> {
     bottomToTopH2VMap.put(HorizontalAlignment.RIGHT, VerticalAlignment.BOTTOM);
   }
 
-  public TypeSetter(Orientation orientation, HorizontalAlignment halign, VerticalAlignment valign,
-      Font<T> font, Color color) {
-    this.orientation = orientation;
+  public TypeSetter(HorizontalAlignment halign, VerticalAlignment valign, Font<T> font, Color color) {
     this.halign = halign;
     this.valign = valign;
     this.font = font;
@@ -52,11 +48,13 @@ public class TypeSetter<T> {
   }
 
   public void write(String text, float x, float y, Canvas<T> canvas) throws IOException {
-    canvas.write(text, orientation, halign, valign, x, y, font, color);
+    write(text, x, y, 0f, canvas);
   }
 
-  public Orientation getOrientation() {
-    return orientation;
+  public void write(String text, float x, float y, float rotation, Canvas<T> canvas)
+      throws IOException {
+    canvas.write(text, x, y, canvas.xShift(halign, text, font), canvas.yShift(valign, font),
+        rotation, font, color);
   }
 
   public HorizontalAlignment getHalign() {
@@ -75,31 +73,16 @@ public class TypeSetter<T> {
     return color;
   }
 
-  public TypeSetter<T> transform(Orientation orientation) {
-    switch (orientation) {
-    case LEFT_TO_RIGHT:
-      return this;
-    case TOP_TO_BOTTOM:
-      return new TypeSetter<T>(orientation, topToBottomV2HMap.get(valign),
-          topToBottomH2VMap.get(halign), font, color);
-    case BOTTOM_TO_TOP:
-      return new TypeSetter<T>(orientation, bottomToTopV2HMap.get(valign),
-          bottomToTopH2VMap.get(halign), font, color);
-    default:
-      throw new IllegalStateException("unkown orientation");
-    }
+  public TypeSetter<T> with(Font<T> newFont) {
+    return new TypeSetter<T>(halign, valign, newFont, color);
   }
 
-  public TypeSetter<T> hAlign(HorizontalAlignment newHAlign) {
-    return new TypeSetter<T>(orientation, newHAlign, valign, font, color);
+  public TypeSetter<T> with(HorizontalAlignment newHAlign) {
+    return new TypeSetter<T>(newHAlign, valign, font, color);
   }
 
-  public TypeSetter<T> vAlign(VerticalAlignment newVAlign) {
-    return new TypeSetter<T>(orientation, halign, newVAlign, font, color);
-  }
-
-  public TypeSetter<T> orient(Orientation newOrientation) {
-    return new TypeSetter<T>(newOrientation, halign, valign, font, color);
+  public TypeSetter<T> with(VerticalAlignment newVAlign) {
+    return new TypeSetter<T>(halign, newVAlign, font, color);
   }
 
 }

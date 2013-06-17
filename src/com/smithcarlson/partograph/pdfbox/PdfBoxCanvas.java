@@ -28,15 +28,6 @@ public class PdfBoxCanvas implements Canvas<PdfBox> {
   private State state = null;
   private final float offsetX, offsetY;
 
-  private static final Map<Orientation, Float> ROTATIONS;
-  static {
-    Map<Orientation, Float> map = new HashMap<Orientation, Float>();
-    map.put(Orientation.LEFT_TO_RIGHT, 0f);
-    map.put(Orientation.BOTTOM_TO_TOP, (float) Math.PI * 0.5f);
-    map.put(Orientation.TOP_TO_BOTTOM, (float) Math.PI * -0.5f);
-    ROTATIONS = map;
-  }
-
   private static final Map<LineCapStyle, Integer> LINE_CAPS;
   static {
     Map<LineCapStyle, Integer> map = new HashMap<LineCapStyle, Integer>();
@@ -90,23 +81,6 @@ public class PdfBoxCanvas implements Canvas<PdfBox> {
     float _y2 = mediaBox.getHeight() - PdfBox.toPoints(y2 + offsetY);
 
     contentStream.drawLine(_x1, _y1, _x2, _y2);
-  }
-
-  @Override
-  public void write(String text, Orientation orientation, HorizontalAlignment halign,
-      VerticalAlignment valign, float x, float y, Font<PdfBox> font, Color color)
-      throws IOException {
-
-    if (state != State.OPEN)
-      throw new IllegalStateException("Writing to closed canvas");
-
-    if (!(font instanceof PdfBoxFont)) {
-      throw new IllegalArgumentException("Bad PdfBoxFont!!");
-    }
-    float xShift = xShift(halign, text, font);
-    float yShift = yShift(valign, font);
-
-    write(text, x, y, xShift, yShift, ROTATIONS.get(orientation), font, color);
   }
 
   @Override

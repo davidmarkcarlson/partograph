@@ -7,11 +7,11 @@ import com.smithcarlson.partograph.general.Canvas;
 import com.smithcarlson.partograph.general.Canvas.HorizontalAlignment;
 import com.smithcarlson.partograph.general.Canvas.LineCapStyle;
 import com.smithcarlson.partograph.general.Canvas.LinePattern;
-import com.smithcarlson.partograph.general.Canvas.Orientation;
 import com.smithcarlson.partograph.general.Canvas.VerticalAlignment;
 import com.smithcarlson.partograph.general.Font;
 import com.smithcarlson.partograph.general.Pen;
 import com.smithcarlson.partograph.general.PointList;
+import com.smithcarlson.partograph.general.TypeSetter;
 
 // Ultimately, use various canvas types to support different output forms (e.g. js canvas, ios, svg etc.)
 // TODO refactor out magic #s./move layout calculations into the layout class.
@@ -30,9 +30,9 @@ public class SpecializedPartograph<T> {
   }
 
   public void render(Canvas<T> canvas) throws IOException {
-    canvas.write(title, Orientation.LEFT_TO_RIGHT, HorizontalAlignment.CENTER,
-        VerticalAlignment.BOTTOM, base.layout.getPartographCenterX(),
-        base.layout.getPartographTop() - 0.5f, base.layout.getTitleFont(), Color.BLACK);
+    (new TypeSetter<T>(HorizontalAlignment.CENTER, VerticalAlignment.BOTTOM,
+        base.layout.getTitleFont(), Color.BLACK)).write(title, base.layout.getPartographCenterX(),
+        base.layout.getPartographTop() - 0.5f, canvas);
 
     drawDystociaAlertPolygon(canvas);
     base.drawDystociaActionPolygon(durations, ACTION_AREA_COLOR, canvas);
@@ -80,15 +80,13 @@ public class SpecializedPartograph<T> {
     base.layout.lightLineFS().drawBoxAround(points.getCurrentX(),
         base.layout.getPartographTop() - (gap + height / 2), width, height, canvas);
 
+    TypeSetter<T> typesetter = new TypeSetter<T>(HorizontalAlignment.CENTER, VerticalAlignment.BOTTOM,
+        base.layout.getHeadingFont(), Color.BLACK);
     float baseline = base.layout.getPartographTop()
         - (gap + (font.getLineHeight() - font.getAscenderHeight()));
-    canvas.write(text[1], Orientation.LEFT_TO_RIGHT, HorizontalAlignment.CENTER,
-        VerticalAlignment.BOTTOM, points.getCurrentX(), baseline, base.layout.getHeadingFont(),
-        Color.BLACK);
+    typesetter.write(text[1], points.getCurrentX(), baseline, canvas);
     baseline -= font.getLineHeight();
-    canvas.write(text[0], Orientation.LEFT_TO_RIGHT, HorizontalAlignment.CENTER,
-        VerticalAlignment.BOTTOM, points.getCurrentX(), baseline, base.layout.getHeadingFont(),
-        Color.BLACK);
+    typesetter.write(text[0], points.getCurrentX(), baseline, canvas);
   }
 
   private void drawDystociaAlertPolygon(Canvas<T> canvas) throws IOException {

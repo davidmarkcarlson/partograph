@@ -7,10 +7,10 @@ import com.smithcarlson.partograph.general.Canvas;
 import com.smithcarlson.partograph.general.Canvas.HorizontalAlignment;
 import com.smithcarlson.partograph.general.Canvas.LineCapStyle;
 import com.smithcarlson.partograph.general.Canvas.LinePattern;
-import com.smithcarlson.partograph.general.Canvas.Orientation;
 import com.smithcarlson.partograph.general.Canvas.VerticalAlignment;
 import com.smithcarlson.partograph.general.Font;
 import com.smithcarlson.partograph.general.Pen;
+import com.smithcarlson.partograph.general.TypeSetter;
 import com.smithcarlson.partograph.pdfbox.PdfBox;
 
 public class CombinedPartograph<T> {
@@ -31,10 +31,9 @@ public class CombinedPartograph<T> {
   }
 
   public void render(Canvas<T> canvas) throws IOException {
-    canvas.write(title, Orientation.LEFT_TO_RIGHT, HorizontalAlignment.CENTER,
-        VerticalAlignment.BOTTOM, base.layout.getPartographCenterX(),
-        base.layout.getPartographTop() - 0.5f, base.layout.getTitleFont(), Color.BLACK);
     Layout<T> l = base.layout;
+    (new TypeSetter<T>(HorizontalAlignment.LEFT, VerticalAlignment.BASELINE, l.getTitleFont(),
+        Color.BLACK)).write(title, l.getPartographCenterX(), l.getPartographTop() - 0.5f, canvas);
 
     for (int i = 0; i < dystocialDurations.length; i++) {
       base.drawDystociaActionPolygon(dystocialDurations[i], DYSTOCIA_LINE_COLORS[i], canvas);
@@ -43,9 +42,10 @@ public class CombinedPartograph<T> {
     base.drawLeftYAxis(canvas);
     base.drawVertGridLines(canvas);
     base.drawHorizGridLines(canvas);
-    l.headingSetter().vAlign(VerticalAlignment.TOP)
+    l.headingSetter().with(VerticalAlignment.TOP)
         .write("Time (hrs)", l.getPartographCenterX(), l.getXAxisLabelY(), canvas);
 
+    // TODO resolve whether to really use a pen here nor not.
     Pen dystociaLine = new Pen(2.0f, Color.BLACK, LinePattern.SOLID, LineCapStyle.PROJECTING_SQUARE);
 
     for (int i = 0; i < dystocialDurations.length; i++) {
@@ -56,22 +56,23 @@ public class CombinedPartograph<T> {
 
   private void drawDystocialLine(String label, int position, float[] durations, Pen pen,
       Canvas<T> canvas) throws IOException {
-    Font<T> font = base.layout.getHeadingFont();
+    Layout<T> l = base.layout;
+    Font<T> font = l.getHeadingFont();
 
     float totalDuration = 0;
     for (float duration : durations) {
       totalDuration += duration;
     }
-    float xPos = base.layout.getPartographXForHour(totalDuration)
-        + (pen.getLineThickness() / (PdfBox.PPI *   2f));
-    float bottom = base.layout.getPartographTop();
+    float xPos = l.getPartographXForHour(totalDuration)
+        + (pen.getLineThickness() / (PdfBox.PPI * 2f));
+    float bottom = l.getPartographTop();
     float gap = 0.10f + ((position % 2 != 0) ? 1.5f * font.getLineHeight() : 0f);
     float top = bottom - gap;
     pen.drawLine(xPos, bottom, xPos, top, canvas);
 
     float baseline = top - (font.getLineHeight() - font.getAscenderHeight());
-    canvas.write(label, Orientation.LEFT_TO_RIGHT, HorizontalAlignment.CENTER,
-        VerticalAlignment.BOTTOM, xPos, baseline, base.layout.getHeadingFont(), Color.BLACK);
-  }
 
+    (new TypeSetter<T>(HorizontalAlignment.CENTER, VerticalAlignment.BASELINE, font, Color.BLACK))
+        .write(label, xPos, baseline, canvas);
+  }
 }
