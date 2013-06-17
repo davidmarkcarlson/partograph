@@ -7,6 +7,9 @@ import java.io.IOException;
  * Represents an abstract rendering surface.
  *
  * @author dcarlson
+ *
+ *         TODO switch to using a pen (for lines). TODO maybe similar on
+ *         strings.
  */
 public interface Canvas<T> {
   enum HorizontalAlignment {
@@ -33,25 +36,25 @@ public interface Canvas<T> {
     BOTTOM, BASELINE, CENTER, TOP
   }
 
-  enum Border {
+  enum Line {
     TOP, HORIZ_CENTER, BOTTOM, LEFT, VERT_CENTER, RIGHT
   }
 
   void drawLine(float x1, float y1, float x2, float y2, float lineWidth, LinePattern linePattern,
       Color color, LineCapStyle capStyle) throws IOException;
 
-  void drawBox(float x1, float x2, float y1, float y2, float lineWidth, LinePattern linePattern,
-      Color color, LineCapStyle capStyle) throws IOException;
-
-  void drawBoxAround(float x, float y, float width, float height, float heavyLineWeight,
-      LinePattern solid, Color black, LineCapStyle projectingSquare) throws IOException;
-
   void fillPolygon(PointList points, Color fillColor) throws IOException;
+
+  float width(String text, Font<T> font) throws IOException;
 
   void write(String string, Orientation orientation, HorizontalAlignment halign,
       VerticalAlignment valign, float x, float y, Font<T> font, Color color) throws IOException;
 
-  void writeWithin(String string, float x1, float x2, float y1, float y2, Orientation orientation,
-      HorizontalAlignment halign, VerticalAlignment valign, Font<T> font, Border[] borders,
-      float borderThickness, LinePattern borderPattern, Color color) throws IOException;
+  void write(String string, float x, float y, float xShift, float yShift, float angle,
+      Font<T> font, Color color) throws IOException;
+
+  float xShift(HorizontalAlignment halign, String text, Font<T> font) throws IOException;
+
+  float yShift(VerticalAlignment valign, Font<T> font) throws IOException;
+
 }

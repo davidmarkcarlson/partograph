@@ -1,13 +1,23 @@
 package com.smithcarlson.partograph;
 
-public class BaseLayout {
+import com.smithcarlson.partograph.general.Pen;
+import com.smithcarlson.partograph.general.TypeSetter;
+
+public class BaseLayout<T> {
   int cmCount;
   int hours;
   int linesPerHour;
 
-  float lightLineWeight;
-  float heavyLineWeight;
-  float wideLineWeight;
+  Pen lightLine;
+  Pen lightLineFS;
+  Pen heavyLine;
+  Pen heavyLineFS;
+  Pen dottedGridLine;
+  Pen dashDotDotGridLine;
+
+  TypeSetter<T> titleSetter;
+  TypeSetter<T> headingSetter;
+  TypeSetter<T> bodySetter;
 
   float partographTop;
   float partographBottom;

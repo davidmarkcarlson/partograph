@@ -14,4 +14,9 @@ public interface Font<T> {
 
   float getDescenderHeight();
 
+  float getXHeight();
+
+  float getCenterY();
+
+  float getDescender();
 }

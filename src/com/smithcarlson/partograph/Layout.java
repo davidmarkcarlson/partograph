@@ -1,6 +1,8 @@
 package com.smithcarlson.partograph;
 
 import com.smithcarlson.partograph.general.Font;
+import com.smithcarlson.partograph.general.Pen;
+import com.smithcarlson.partograph.general.TypeSetter;
 
 public interface Layout<T> {
 
@@ -8,19 +10,25 @@ public interface Layout<T> {
   Font<T> getHeadingFont();
   Font<T> getBodyFont();
 
-  float getLightLineWeight();
-  float getHeavyLineWeight();
-  float getWideLineWeight();
+  Pen lightLineFS();
+  Pen lightLine();
+  Pen heavyLine();
+  Pen heavyLineFS();
+  Pen dottedGridLine();
+  Pen dashDotDotGridLine();
+
+  TypeSetter<T> titleSetter();
+  TypeSetter<T> headingSetter();
+  TypeSetter<T> bodySetter();
+  TypeSetter<T> baseLineSetter();
 
   int getCmCount();
   int getLinesPerHour();
 
 
-  @Deprecated
-  float getHeightPerCm();
-  float getHLineLeft();
-  float getHLineRight();
-  float getHLineY(int i);
+  float hLineLeft();
+  float hLineRight();
+  float hLineY(int i);
   int getHours();
 
   float getPartographTop();
@@ -43,11 +51,14 @@ public interface Layout<T> {
 
   float getTimeWriteInTop();
   float getTimeWriteInBottom();
+  float getTimeWriteInCenterY();
+  float getTimeWorksheetLabelY();
 
   @Deprecated
   float getWidthPerHour();
   float getHourBoxCenterY();
   float getHourBoxSize();
-  float getLeftYAxisHashLabelX();
-  float getRightYAxisHashLabelX();
+  float leftYAxisHashLabelX();
+  float rightYAxisHashLabelX();
+  float getXAxisLabelY();
 }

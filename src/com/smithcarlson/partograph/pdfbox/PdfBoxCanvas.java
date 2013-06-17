@@ -15,11 +15,11 @@ import com.smithcarlson.partograph.general.Font;
 import com.smithcarlson.partograph.general.PointList;
 
 /**
- * TODO figure out line patterns for real
+ * TODO figure out line patterns for real TODO figure out font sizing for real
+ * -- improve vertical centering
  *
  * @author dcarlson
  *
- *         TODO improve vertical centering
  */
 public class PdfBoxCanvas implements Canvas<PdfBox> {
 
@@ -64,16 +64,6 @@ public class PdfBoxCanvas implements Canvas<PdfBox> {
     this.offsetY = atY;
   }
 
-  public void close() throws IOException {
-    state = State.CLOSED;
-    contentStream.close();
-  }
-
-  @Deprecated
-  public PDPageContentStream getContentStream() {
-    return contentStream;
-  }
-
   @Override
   public void drawLine(float x1, float y1, float x2, float y2, float width, LinePattern style,
       Color color, LineCapStyle cap) throws IOException {
@@ -103,7 +93,7 @@ public class PdfBoxCanvas implements Canvas<PdfBox> {
   }
 
   @Override
-  public void write(String string, Orientation orientation, HorizontalAlignment halign,
+  public void write(String text, Orientation orientation, HorizontalAlignment halign,
       VerticalAlignment valign, float x, float y, Font<PdfBox> font, Color color)
       throws IOException {
 
@@ -113,32 +103,22 @@ public class PdfBoxCanvas implements Canvas<PdfBox> {
     if (!(font instanceof PdfBoxFont)) {
       throw new IllegalArgumentException("Bad PdfBoxFont!!");
     }
+    float xShift = xShift(halign, text, font);
+    float yShift = yShift(valign, font);
+
+    write(text, x, y, xShift, yShift, ROTATIONS.get(orientation), font, color);
+  }
+
+  @Override
+  public void write(String string, float x, float y, float xShift, float yShift, float angle,
+      Font<PdfBox> font, Color color) throws IOException {
     PdfBoxFont _font = (PdfBoxFont) font;
-    contentStream.setNonStrokingColor(color);
 
     float posx = PdfBox.toPoints(x + offsetX);
     float posy = mediaBox.getHeight() - PdfBox.toPoints(y + offsetY);
 
-    float shiftx = -HORIZ_SHIFT_MULT.get(halign) * _font.getStringWidthRaw(string);
-    float shifty = 0f;
-    switch (valign) {
-    case TOP:
-      shifty = -font.getAscenderHeight();
-      break;
-    case CENTER:
-      shifty = font.getAscenderHeight() / -2f;
-      break;
-    case BASELINE:
-      shifty = 0;
-      break;
-    case BOTTOM:
-      shifty = font.getDescenderHeight();
-      break;
-    }
+    Matrix shift = Matrix.getTranslatingInstance(PdfBox.toPoints(xShift), PdfBox.toPoints(yShift));
 
-    Matrix shift = Matrix.getTranslatingInstance(shiftx, shifty);
-
-    float angle = ROTATIONS.get(orientation);
     float angleCos = (float) Math.cos(angle);
     float angleSin = (float) Math.sin(angle);
 
@@ -150,12 +130,35 @@ public class PdfBoxCanvas implements Canvas<PdfBox> {
 
     Matrix position = Matrix.getTranslatingInstance(posx, posy);
     float[][] tx = shift.multiply(rotation).multiply(position).getValues();
+
+    contentStream.setNonStrokingColor(color);
     contentStream.beginText();
     contentStream.setFont(_font.fontFamily, font.getSizePts());
     contentStream.moveTextPositionByAmount(posx, posy);
     contentStream.setTextMatrix(tx[0][0], tx[0][1], tx[1][0], tx[1][1], tx[2][0], tx[2][1]);
     contentStream.drawString(string);
     contentStream.endText();
+  }
+
+  @Override
+  public float xShift(HorizontalAlignment halign, String text, Font<PdfBox> font)
+      throws IOException {
+    return -HORIZ_SHIFT_MULT.get(halign) * width(text, font);
+  }
+
+  @Override
+  public float yShift(VerticalAlignment valign, Font<PdfBox> font) {
+    switch (valign) {
+    case TOP:
+      return -(font.getLineHeight() - font.getDescender());
+    case CENTER:
+      return font.getXHeight() / -2f;
+    case BASELINE:
+      return 0;
+    case BOTTOM:
+      return (font.getLineHeight() - font.getAscenderHeight());
+    }
+    throw new IllegalStateException("Unknown vertical alignment type");
   }
 
   @Override
@@ -167,56 +170,11 @@ public class PdfBoxCanvas implements Canvas<PdfBox> {
   }
 
   @Override
-  public void drawBox(float box_x1, float box_x2, float box_y1, float box_y2, float lineWidth,
-      Canvas.LinePattern linePattern, Color color, Canvas.LineCapStyle capStyle) throws IOException {
-    drawLine(box_x1, box_y1, box_x2, box_y1, lineWidth, linePattern, color, capStyle);
-    drawLine(box_x1, box_y1, box_x1, box_y2, lineWidth, linePattern, color, capStyle);
-    drawLine(box_x1, box_y2, box_x2, box_y2, lineWidth, linePattern, color, capStyle);
-    drawLine(box_x2, box_y1, box_x2, box_y2, lineWidth, linePattern, color, capStyle);
-  }
-
-  @Override
-  public void drawBoxAround(float x, float y, float width, float height, float thickness,
-      Canvas.LinePattern pattern, Color color, Canvas.LineCapStyle capStyle) throws IOException {
-    drawBox(x - (width / 2f), x + (width / 2f), y - (height / 2f), y + (height / 2f), thickness,
-        pattern, color, capStyle);
-  }
-
-  @Override
-  public void writeWithin(String string, float x1, float x2, float y1, float y2,
-      Canvas.Orientation orientation, Canvas.HorizontalAlignment halign,
-      Canvas.VerticalAlignment valign, Font<PdfBox> font, Canvas.Border[] borders,
-      float borderThickness, Canvas.LinePattern borderPattern, Color color) throws IOException {
-    float centerX = (x1 + x2) / 2f;
-    float centerY = (y1 + y2) / 2f;
-    for (Canvas.Border border : borders) {
-      switch (border) {
-      case TOP:
-        drawLine(x1, y1, x2, y1, borderThickness, borderPattern, color,
-            LineCapStyle.PROJECTING_SQUARE);
-        break;
-      case HORIZ_CENTER:
-        drawLine(x1, centerY, x2, centerY, borderThickness, borderPattern, color,
-            LineCapStyle.PROJECTING_SQUARE);
-        break;
-      case BOTTOM:
-        drawLine(x1, y2, x2, y2, borderThickness, borderPattern, color,
-            LineCapStyle.PROJECTING_SQUARE);
-        break;
-      case LEFT:
-        drawLine(x1, y1, x1, y2, borderThickness, borderPattern, color,
-            LineCapStyle.PROJECTING_SQUARE);
-        break;
-      case VERT_CENTER:
-        drawLine(centerX, y1, centerX, y2, borderThickness, borderPattern, color,
-            LineCapStyle.PROJECTING_SQUARE);
-        break;
-      case RIGHT:
-        drawLine(x2, y1, x2, y2, borderThickness, borderPattern, color,
-            LineCapStyle.PROJECTING_SQUARE);
-        break;
-      }
-      write(string, orientation, halign, valign, centerX, centerY, font, color);
+  public float width(String text, Font<PdfBox> font) throws IOException {
+    if (!(font instanceof PdfBoxFont)) {
+      throw new IllegalArgumentException("Bad PdfBoxFont!!");
     }
+    return ((PdfBoxFont) font).getStringWidth(text);
+
   }
 }

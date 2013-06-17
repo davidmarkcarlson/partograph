@@ -35,6 +35,8 @@ public class PdfBoxFont implements Font<PdfBox> {
 
   private final float descenderHeight;
 
+  private final float centerY;
+
   public PdfBoxFont(PDFont fontFamily, float sizePts) throws IOException {
     super();
     this.fontFamily = fontFamily;
@@ -44,12 +46,13 @@ public class PdfBoxFont implements Font<PdfBox> {
         / FONT_UNIT_MULTIPLIER;
     this.xHeight = lineHeight * fontFamily.getFontHeight(referenceChars, 1, 1)
         / FONT_UNIT_MULTIPLIER;
-    this.ascenderHeight = lineHeight * fontFamily.getFontHeight(referenceChars, 1, 1)
+    this.ascenderHeight = lineHeight * fontFamily.getFontHeight(referenceChars, 2, 1)
         / FONT_UNIT_MULTIPLIER;
     this.ascender = ascenderHeight - xHeight;
-    this.descenderHeight = lineHeight * fontFamily.getFontHeight(referenceChars, 1, 1)
+    this.descenderHeight = lineHeight * fontFamily.getFontHeight(referenceChars, 3, 1)
         / FONT_UNIT_MULTIPLIER;
     this.descender = descenderHeight - xHeight;
+    this.centerY = ascenderHeight/2f;
   }
 
   public float getAscender() {
@@ -65,6 +68,7 @@ public class PdfBoxFont implements Font<PdfBox> {
     return capHeight;
   }
 
+  @Override
   public float getDescender() {
     return descender;
   }
@@ -89,8 +93,14 @@ public class PdfBoxFont implements Font<PdfBox> {
     return sizePts * fontFamily.getStringWidth(text) / (PdfBox.PPI * FONT_UNIT_MULTIPLIER);
   }
 
+  @Override
   public float getXHeight() {
     return xHeight;
+  }
+
+  @Override
+  public float getCenterY() {
+    return centerY;
   }
 
   float getStringWidthRaw(String text) throws IOException {

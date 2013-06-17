@@ -9,6 +9,8 @@ import com.smithcarlson.partograph.general.Canvas.LineCapStyle;
 import com.smithcarlson.partograph.general.Canvas.LinePattern;
 import com.smithcarlson.partograph.general.Canvas.Orientation;
 import com.smithcarlson.partograph.general.Canvas.VerticalAlignment;
+import com.smithcarlson.partograph.general.Font;
+import com.smithcarlson.partograph.general.Pen;
 import com.smithcarlson.partograph.general.PointList;
 
 // Ultimately, use various canvas types to support different output forms (e.g. js canvas, ios, svg etc.)
@@ -17,7 +19,7 @@ import com.smithcarlson.partograph.general.PointList;
 public class SpecializedPartograph<T> {
   private final Color ALERT_AREA_COLOR = new Color(1f, 1f, 0.4f, 0.1f);
   private final Color ACTION_AREA_COLOR = new Color(1f, 0.4f, 0.4f, 0.1f);
-  private final Color DYSTOCIA_LINE_COLOR = new Color(0.5f, 0.5f, 1f, 0.1f);
+  private final Color DYSTOCIA_LINE_COLOR = new Color(0.3f, 0.5f, 0.8f, 0.1f);
 
   private float[] durations;
   private String title;
@@ -28,30 +30,25 @@ public class SpecializedPartograph<T> {
   }
 
   public void render(Canvas<T> canvas) throws IOException {
-    try {
-      canvas.write(title, Orientation.LEFT_TO_RIGHT, HorizontalAlignment.CENTER,
-          VerticalAlignment.BOTTOM, base.layout.getPartographCenterX(),
-          base.layout.getPartographTop() - 0.5f, base.layout.getTitleFont(), Color.BLACK);
+    canvas.write(title, Orientation.LEFT_TO_RIGHT, HorizontalAlignment.CENTER,
+        VerticalAlignment.BOTTOM, base.layout.getPartographCenterX(),
+        base.layout.getPartographTop() - 0.5f, base.layout.getTitleFont(), Color.BLACK);
 
-      drawDystociaAlertPolygon(canvas);
-      drawDystociaActionPolygon(canvas);
+    drawDystociaAlertPolygon(canvas);
+    base.drawDystociaActionPolygon(durations, ACTION_AREA_COLOR, canvas);
 
-      base.drawLeftYAxis(canvas);
-      base.labelLeftYAxis(canvas);
+    base.drawLeftYAxis(canvas);
+    base.labelLeftYAxis(canvas);
 
-      base.drawRightYAxis(canvas);
-      base.labelRightAxis(canvas);
+    base.drawRightYAxis(canvas);
+    base.labelRightAxis(canvas);
 
-      base.drawVertGridLines(canvas);
-      base.drawHorizGridLines(canvas);
+    base.drawVertGridLines(canvas);
+    base.drawHorizGridLines(canvas);
 
-      base.drawTimelineWorkspace(canvas);
+    base.drawTimelineWorkspace(canvas);
 
-      drawDystociaLine(canvas);
-
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    drawDystociaLine(canvas);
   }
 
   public void setDurations(float[] durations) {
@@ -62,66 +59,43 @@ public class SpecializedPartograph<T> {
     this.title = title;
   }
 
-  private PointList createDystociaSequence() {
-    PointList points = new PointList();
-    float x = base.layout.getPartographLeft();
-    float y = base.layout.getPartographBottom();
-
-    int increments = base.layout.getCmCount() - 1;
-    float cumulativeTime = 0f;
-    points.addPoint(x, y);
-    int i = 1;
-    while (i < increments) {
-      // h line
-      cumulativeTime += durations[i];
-      x = base.layout.getPartographXForHour(cumulativeTime);
-      points.addPoint(x, y);
-
-      i++;
-      // v offset
-      y = base.layout.getPartographYForPosition(i);
-      points.addPoint(x, y);
-    }
-    return points;
-  }
-
   private void drawDystociaLine(Canvas<T> canvas) throws IOException {
-    PointList points = createDystociaSequence();
+    PointList points = base.createDystociaSequence(durations);
     points.addPoint(points.getCurrentX(), points.getCurrentY() - 0.12f);
+
+    Pen dystociaLine = new Pen(3.0f, DYSTOCIA_LINE_COLOR, LinePattern.SOLID,
+        LineCapStyle.PROJECTING_SQUARE);
     for (int i = 1; i < points.size(); i++) {
-      canvas.drawLine(points.getXAt(i - 1), points.getYAt(i - 1), points.getXAt(i),
-          points.getYAt(i), base.layout.getWideLineWeight(), LinePattern.SOLID,
-          DYSTOCIA_LINE_COLOR, LineCapStyle.PROJECTING_SQUARE);
+      dystociaLine.drawLine(points.getXAt(i - 1), points.getYAt(i - 1), points.getXAt(i),
+          points.getYAt(i), canvas);
     }
 
-    float box_x1 = points.getCurrentX() - 0.3f;
-    float box_x2 = points.getCurrentX() + 0.3f;
-    float box_y1 = base.layout.getPartographTop() - 0.4f;
-    float box_y2 = base.layout.getPartographTop() - 0.13f;
+    Font<T> font = base.layout.getHeadingFont();
+    String[] text = new String[] { "Dystocia", "Line" };
+    float margin = canvas.width("m", font);
+    float width = margin + Math.max(canvas.width(text[0], font), canvas.width(text[1], font));
+    float height = (font.getLineHeight() * 2f) + margin;
+    float gap = 0.15f;
 
-    canvas.drawBox(box_x1, box_x2, box_y1, box_y2, 0.5f, LinePattern.SOLID, Color.BLACK,
-        LineCapStyle.ROUND);
-    canvas.write("Dystocia", Orientation.LEFT_TO_RIGHT, HorizontalAlignment.CENTER,
-        VerticalAlignment.BOTTOM, points.getCurrentX(), base.layout.getPartographTop() - 0.3f,
-        base.layout.getHeadingFont(), Color.BLACK);
-    canvas.write("Line", Orientation.LEFT_TO_RIGHT, HorizontalAlignment.CENTER,
-        VerticalAlignment.BOTTOM, points.getCurrentX(), base.layout.getPartographTop() - 0.15f,
-        base.layout.getHeadingFont(), Color.BLACK);
+    base.layout.lightLineFS().drawBoxAround(points.getCurrentX(),
+        base.layout.getPartographTop() - (gap + height / 2), width, height, canvas);
+
+    float baseline = base.layout.getPartographTop()
+        - (gap + (font.getLineHeight() - font.getAscenderHeight()));
+    canvas.write(text[1], Orientation.LEFT_TO_RIGHT, HorizontalAlignment.CENTER,
+        VerticalAlignment.BOTTOM, points.getCurrentX(), baseline, base.layout.getHeadingFont(),
+        Color.BLACK);
+    baseline -= font.getLineHeight();
+    canvas.write(text[0], Orientation.LEFT_TO_RIGHT, HorizontalAlignment.CENTER,
+        VerticalAlignment.BOTTOM, points.getCurrentX(), baseline, base.layout.getHeadingFont(),
+        Color.BLACK);
   }
 
   private void drawDystociaAlertPolygon(Canvas<T> canvas) throws IOException {
-    PointList points = createDystociaSequence();
+    PointList points = base.createDystociaSequence(durations);
     points.addPoint(base.layout.getPartographLeft(), base.layout.getPartographTop());
     points.addPoint(base.layout.getPartographLeft(), base.layout.getPartographBottom());
     canvas.fillPolygon(points, ALERT_AREA_COLOR);
-  }
-
-  private void drawDystociaActionPolygon(Canvas<T> canvas) throws IOException {
-    PointList points = createDystociaSequence();
-    points.addPoint(base.layout.getPartographRight(), base.layout.getPartographTop());
-    points.addPoint(base.layout.getPartographRight(), base.layout.getPartographBottom());
-    points.addPoint(base.layout.getPartographLeft(), base.layout.getPartographBottom());
-    canvas.fillPolygon(points, ACTION_AREA_COLOR);
   }
 
 }

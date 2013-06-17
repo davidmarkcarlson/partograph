@@ -1,14 +1,22 @@
 package com.smithcarlson.partograph;
 
+import java.awt.Color;
 import java.io.IOException;
 
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
+import com.smithcarlson.partograph.general.Canvas.HorizontalAlignment;
+import com.smithcarlson.partograph.general.Canvas.LineCapStyle;
+import com.smithcarlson.partograph.general.Canvas.LinePattern;
+import com.smithcarlson.partograph.general.Canvas.Orientation;
+import com.smithcarlson.partograph.general.Canvas.VerticalAlignment;
 import com.smithcarlson.partograph.general.Font;
+import com.smithcarlson.partograph.general.Pen;
+import com.smithcarlson.partograph.general.TypeSetter;
 import com.smithcarlson.partograph.pdfbox.PdfBox;
 import com.smithcarlson.partograph.pdfbox.PdfBoxFont;
 
-public class PdfBoxLayout extends BaseLayout implements Layout<PdfBox> {
+public class PdfBoxLayout extends BaseLayout<PdfBox> implements Layout<PdfBox> {
   private final Font<PdfBox> titleFont;
   private final Font<PdfBox> headingFont;
   private final Font<PdfBox> bodyFont;
@@ -22,9 +30,19 @@ public class PdfBoxLayout extends BaseLayout implements Layout<PdfBox> {
     headingFont = new PdfBoxFont(PDType1Font.HELVETICA, 8f);
     bodyFont = new PdfBoxFont(PDType1Font.HELVETICA, 7f);
 
-    lightLineWeight = 0.5f;
-    heavyLineWeight = 1.0f;
-    wideLineWeight = 2.0f;
+    titleSetter = new TypeSetter<PdfBox>(Orientation.LEFT_TO_RIGHT, HorizontalAlignment.CENTER,
+        VerticalAlignment.CENTER, bodyFont, Color.BLACK);
+    headingSetter = new TypeSetter<PdfBox>(Orientation.LEFT_TO_RIGHT, HorizontalAlignment.CENTER,
+        VerticalAlignment.CENTER, bodyFont, Color.BLACK);
+    bodySetter = new TypeSetter<PdfBox>(Orientation.LEFT_TO_RIGHT, HorizontalAlignment.CENTER,
+        VerticalAlignment.CENTER, bodyFont, Color.BLACK);
+
+    lightLineFS = new Pen(0.5f, Color.BLACK, LinePattern.SOLID, LineCapStyle.PROJECTING_SQUARE);
+    lightLine = new Pen(0.5f, Color.BLACK, LinePattern.SOLID, LineCapStyle.BUTT);
+    heavyLine = new Pen(1.0f, Color.BLACK, LinePattern.SOLID, LineCapStyle.BUTT);
+    heavyLineFS = new Pen(1.0f, Color.BLACK, LinePattern.SOLID, LineCapStyle.PROJECTING_SQUARE);
+    dottedGridLine = new Pen(0.5f, Color.GRAY, LinePattern.SOLID, LineCapStyle.BUTT);
+    dashDotDotGridLine = new Pen(0.5f, Color.GRAY, LinePattern.DASH_DOT_DOT, LineCapStyle.BUTT);
 
     partographTop = 2.0f;
     heightPerCm = 0.3f;
@@ -89,11 +107,6 @@ public class PdfBoxLayout extends BaseLayout implements Layout<PdfBox> {
   }
 
   @Override
-  public float getHeightPerCm() {
-    return heightPerCm;
-  }
-
-  @Override
   public float getPartographLeft() {
     return partographLeft;
   }
@@ -119,18 +132,18 @@ public class PdfBoxLayout extends BaseLayout implements Layout<PdfBox> {
   }
 
   @Override
-  public float getHLineLeft() {
+  public float hLineLeft() {
     return partographLeft - xAxisOverhang;
   }
 
   @Override
-  public float getHLineRight() {
+  public float hLineRight() {
     return partographRight + xAxisOverhang;
   }
 
   @Override
-  public float getHLineY(int i) {
-    return partographTop + (getHeightPerCm() * (cmCount - (i + 1)));
+  public float hLineY(int i) {
+    return partographTop + (heightPerCm * (cmCount - (i + 1)));
   }
 
   @Override
@@ -164,16 +177,6 @@ public class PdfBoxLayout extends BaseLayout implements Layout<PdfBox> {
   }
 
   @Override
-  public float getLightLineWeight() {
-    return lightLineWeight;
-  }
-
-  @Override
-  public float getHeavyLineWeight() {
-    return heavyLineWeight;
-  }
-
-  @Override
   public float getTimeWriteInTop() {
     return partographBottom + spaceToHourBoxes + hourBoxSize;
   }
@@ -181,6 +184,11 @@ public class PdfBoxLayout extends BaseLayout implements Layout<PdfBox> {
   @Override
   public float getTimeWriteInBottom() {
     return partographBottom + spaceToHourBoxes + hourBoxSize + timeSpace;
+  }
+
+  @Override
+  public float getTimeWriteInCenterY() {
+    return partographBottom + spaceToHourBoxes + hourBoxSize + timeSpace / 2f;
   }
 
   @Override
@@ -200,12 +208,12 @@ public class PdfBoxLayout extends BaseLayout implements Layout<PdfBox> {
   }
 
   @Override
-  public float getLeftYAxisHashLabelX() {
+  public float leftYAxisHashLabelX() {
     return partographLeft - (yAxisOverhang + yAxisMargin);
   }
 
   @Override
-  public float getRightYAxisHashLabelX() {
+  public float rightYAxisHashLabelX() {
     return partographRight + (yAxisOverhang + yAxisMargin);
   }
 
@@ -215,7 +223,63 @@ public class PdfBoxLayout extends BaseLayout implements Layout<PdfBox> {
   }
 
   @Override
-  public float getWideLineWeight() {
-    return wideLineWeight;
+  public Pen lightLineFS() {
+    return lightLineFS;
+  }
+
+  @Override
+  public Pen lightLine() {
+    return lightLine;
+  }
+
+  @Override
+  public Pen heavyLine() {
+    return heavyLine;
+  }
+
+  @Override
+  public Pen heavyLineFS() {
+    return heavyLineFS;
+  }
+
+  @Override
+  public Pen dottedGridLine() {
+    return dottedGridLine;
+  }
+
+  @Override
+  public Pen dashDotDotGridLine() {
+    return dashDotDotGridLine;
+  }
+
+  @Override
+  public float getXAxisLabelY() {
+    return partographBottom + headingFont.getLineHeight();
+  }
+
+
+  @Override
+  public float getTimeWorksheetLabelY() {
+    return getTimeWriteInBottom() + headingFont.getLineHeight();
+  }
+
+  @Override
+  public TypeSetter<PdfBox> titleSetter() {
+    return titleSetter;
+  }
+
+  @Override
+  public TypeSetter<PdfBox> headingSetter() {
+    return headingSetter;
+  }
+
+  @Override
+  public TypeSetter<PdfBox> bodySetter() {
+    return bodySetter;
+  }
+
+  @Override
+  public TypeSetter<PdfBox> baseLineSetter() {
+    return bodySetter.vAlign(VerticalAlignment.BASELINE);
   }
 }
