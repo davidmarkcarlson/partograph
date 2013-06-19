@@ -52,7 +52,8 @@ public class SpecializedPartograph<T> {
   }
 
   public void setDurations(float[] durations) {
-    this.durations = durations;
+    this.durations = new float[durations.length];
+    System.arraycopy(durations, 0, this.durations, 0, durations.length);
   }
 
   public void setTitle(String title) {

@@ -48,8 +48,6 @@ public class PdfBoxLayout implements Layout<PdfBox> {
   float widthPerHour;
 
   float xAxisOverhang;
-  float xAxisMargin;
-
   float yAxisOverhang;
   float yAxisMargin;
 

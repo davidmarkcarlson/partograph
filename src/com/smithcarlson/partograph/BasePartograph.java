@@ -113,6 +113,8 @@ public class BasePartograph<T> {
       case 2:
         dashDotDotLine.drawLine(x, top, x, l.getHalfHourGridLineBottom(), canvas);
         break;
+      default:
+        break;
       }
     }
 

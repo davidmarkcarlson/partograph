@@ -20,10 +20,10 @@ public class Render {
 
   static final String[] LABELS = new String[] { "< 25", "25-30", "30-40", "> 40", };
   static final float[][] DURATIONS = new float[][] {
-      new float[] { 4.75f, 2.75f, 2f, 1.5f, 1.25f, 1.5f },
-      new float[] { 5f, 3f, 2f, 1.5f, 1.25f, 1.75f },
-      new float[] { 5.5f, 3.25f, 2.25f, 1.5f, 1.25f, 1.75f },
-      new float[] { 7.5f, 4.25f, 2.5f, 1.75f, 1.5f, 1.75f } };
+      new float[] { 4.5f, 2.75f, 2.25f, 1.75f, 1.25f, 1.5f },
+      new float[] { 4.75f, 2.75f, 2.75f, 2f, 1.75f, 2f },
+      new float[] { 5.75f, 3.5f, 2.5f, 2f, 1.5f, 2f },
+      new float[] { 6.75f, 4f, 3.25f, 2.5f, 1.25f, 1.75f } };
 
   public static void main(String[] args) throws IOException, COSVisitorException {
     PDDocument document = new PDDocument();
@@ -35,7 +35,7 @@ public class Render {
     contentStream = new PDPageContentStream(document, page);
     document.addPage(page);
     canvas = new PdfBoxCanvas(page, contentStream, 0.0f, 0.0f);
-    addOverviewPartograph(canvas, "Dystocial Lines By BMI");
+    addOverviewPartograph(canvas, "Dystocia Lines By BMI");
     contentStream.close();
 
     page = new PDPage(PDPage.PAGE_SIZE_LETTER);
