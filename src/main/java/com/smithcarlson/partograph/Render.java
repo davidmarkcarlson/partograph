@@ -1,5 +1,7 @@
 package com.smithcarlson.partograph;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 
 import org.apache.pdfbox.exceptions.COSVisitorException;
@@ -9,6 +11,7 @@ import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 
 import com.smithcarlson.partograph.pdfbox.PdfBox;
 import com.smithcarlson.partograph.pdfbox.PdfBoxCanvas;
+import org.yaml.snakeyaml.Yaml;
 
 public class Render {
   static final int LT_25 = 0;
@@ -25,7 +28,13 @@ public class Render {
       new float[] { 5.75f, 3.5f, 2.5f, 2f, 1.5f, 2f },
       new float[] { 6.75f, 4f, 3.25f, 2.5f, 1.25f, 1.75f } };
 
-  public static void main(String[] args) throws IOException, COSVisitorException {
+  public static void main(String[] args) throws FileNotFoundException {
+    Yaml yaml = new Yaml();
+    Object obj = yaml.load(new FileReader("parto_1.yaml"));
+    System.out.println(obj);
+  }
+
+  public static void xmain(String[] args) throws IOException, COSVisitorException {
     PDDocument document = new PDDocument();
     PDPage page;
     PDPageContentStream contentStream;
