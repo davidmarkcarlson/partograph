@@ -1,40 +1,32 @@
 package com.smithcarlson.partograph;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import com.smithcarlson.partograph.pdfbox.PdfBox;
+import com.smithcarlson.partograph.pdfbox.PdfBoxCanvas;
 import java.io.IOException;
-
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
 
-import com.smithcarlson.partograph.pdfbox.PdfBox;
-import com.smithcarlson.partograph.pdfbox.PdfBoxCanvas;
-import org.yaml.snakeyaml.Yaml;
-
 public class Render {
   static final int LT_25 = 0;
   static final int _25_30 = 1;
-  static final int _30_40 = 2;
-  static final int GT_40 = 3;
+  static final int _30_35 = 2;
+  static final int _35_40 = 3;
+  static final int GT_40 = 4;
 
   static String NULLIPAROUS_PREFIX = "Nulliparous, BMI ";
 
-  static final String[] LABELS = new String[] { "< 25", "25-30", "30-40", "> 40", };
+  static final String[] LABELS = new String[] { "< 25", "25-30", "30-35", "35-40", "> 40", };
   static final float[][] DURATIONS = new float[][] {
-      new float[] { 4.5f, 2.75f, 2.25f, 1.75f, 1.25f, 1.5f },
-      new float[] { 4.75f, 2.75f, 2.75f, 2f, 1.75f, 2f },
-      new float[] { 5.75f, 3.5f, 2.5f, 2f, 1.5f, 2f },
-      new float[] { 6.75f, 4f, 3.25f, 2.5f, 1.25f, 1.75f } };
+      new float[] {4.6f, 7.5f, 9.5f, 11.0f, 12.3f, 13.9f},
+      new float[] {5.0f, 7.9f, 9.9f, 11.4f, 12.7f, 14.4f},
+      new float[] {5.2f, 8.3f, 10.4f, 11.9f, 13.3f, 15.1f},
+      new float[] {5.9f, 9.4f, 11.7f, 13.4f, 14.7f, 16.6f},
+      new float[] {7.4f, 11.6f, 14.1f, 15.8f, 17.2f, 19.1f}
+  };
 
-  public static void main(String[] args) throws FileNotFoundException {
-    Yaml yaml = new Yaml();
-    Object obj = yaml.load(new FileReader("parto_1.yaml"));
-    System.out.println(obj);
-  }
-
-  public static void xmain(String[] args) throws IOException, COSVisitorException {
+  public static void main(String[] args) throws IOException, COSVisitorException {
     PDDocument document = new PDDocument();
     PDPage page;
     PDPageContentStream contentStream;
@@ -52,7 +44,12 @@ public class Render {
     document.addPage(page);
     canvas = new PdfBoxCanvas(page, contentStream, 0.0f, 0.0f);
     addPartograph(canvas, NULLIPAROUS_PREFIX + LABELS[LT_25], DURATIONS[LT_25]);
-    canvas = new PdfBoxCanvas(page, contentStream, 0.0f, 5.0f);
+    contentStream.close();
+
+    page = new PDPage(PDPage.PAGE_SIZE_LETTER);
+    contentStream = new PDPageContentStream(document, page);
+    document.addPage(page);
+    canvas = new PdfBoxCanvas(page, contentStream, 0.0f, 0.0f);
     addPartograph(canvas, NULLIPAROUS_PREFIX + LABELS[_25_30], DURATIONS[_25_30]);
     contentStream.close();
 
@@ -60,8 +57,20 @@ public class Render {
     contentStream = new PDPageContentStream(document, page);
     document.addPage(page);
     canvas = new PdfBoxCanvas(page, contentStream, 0.0f, 0.0f);
-    addPartograph(canvas, NULLIPAROUS_PREFIX + LABELS[_30_40], DURATIONS[_30_40]);
-    canvas = new PdfBoxCanvas(page, contentStream, 0.0f, 5.0f);
+    addPartograph(canvas, NULLIPAROUS_PREFIX + LABELS[_30_35], DURATIONS[_30_35]);
+    contentStream.close();
+
+    page = new PDPage(PDPage.PAGE_SIZE_LETTER);
+    contentStream = new PDPageContentStream(document, page);
+    document.addPage(page);
+    canvas = new PdfBoxCanvas(page, contentStream, 0.0f, 0.0f);
+    addPartograph(canvas, NULLIPAROUS_PREFIX + LABELS[_35_40], DURATIONS[_35_40]);
+    contentStream.close();
+
+    page = new PDPage(PDPage.PAGE_SIZE_LETTER);
+    contentStream = new PDPageContentStream(document, page);
+    document.addPage(page);
+    canvas = new PdfBoxCanvas(page, contentStream, 0.0f, 0.0f);
     addPartograph(canvas, NULLIPAROUS_PREFIX + LABELS[GT_40], DURATIONS[GT_40]);
     contentStream.close();
 

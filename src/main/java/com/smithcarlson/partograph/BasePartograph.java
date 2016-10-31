@@ -20,13 +20,11 @@ public class BasePartograph<T> {
     float y = layout.getPartographBottom();
 
     int increments = layout.getCmCount() - 1;
-    float cumulativeTime = 0f;
     points.addPoint(x, y);
     int i = 0;
     while (i < increments) {
       // h line
-      cumulativeTime += durations[i];
-      x = layout.getPartographXForHour(cumulativeTime);
+      x = layout.getPartographXForHour(durations[i]);
       points.addPoint(x, y);
 
       i++;

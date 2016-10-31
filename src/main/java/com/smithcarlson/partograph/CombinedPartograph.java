@@ -18,6 +18,7 @@ public class CombinedPartograph<T> {
       //
       new Color(69 / 255f, 117 / 255f, 180 / 255f), //
       new Color(145 / 255f, 191 / 255f, 219 / 255f), //
+      new Color(120 / 255f, 196 / 255f, 102 / 255f), //
       new Color(252 / 255f, 141 / 255f, 89 / 255f), //
       new Color(215 / 255f, 48 / 255f, 39 / 255f), //
   };
